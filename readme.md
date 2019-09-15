@@ -22,11 +22,23 @@ Engineers or Data scientists working on Big Data projects that use batch process
 * (Optional) Possible improvements using caching of meta-data.
 
 ### Features:
-* **Onboarding**: Designing a service that is easy to onboard
-* **User-friendly**: A service that is easy to understand and use
-* **Availability**: It will be accessible in all regions
-* **Scalability**: Can scale to a large number of users, projects, and services
-* **Confidentiality**: It will be a completely abstracted service.
-* **Fault-tolerant**: Final output will not be changed compared with original applications, and the service will be resilient
+* **Onboarding:** Designing a service that is easy to onboard
+* **User-friendly:** A service that is easy to understand and use
+* **Availability:** It will be accessible in all regions
+* **Scalability:** Can scale to a large number of users, projects, and services
+* **Confidentiality:** It will be a completely abstracted service.
+* **Fault-tolerant:** Final output will not be changed compared with original applications, and the service will be resilient
+* **Low-latency:** It has to be a low-latency service
 
+## 4. Solution Concept
 
+More research work needs to be done to correctly identify possible solutions.
+
+ Here are some references we are using at the moment to work on the solution:
+https://haoyuzhang.org/publications/riffle-eurosys18.pdf
+https://databricks.com/session/sos-optimizing-shuffle-i-o
+https://pdfs.semanticscholar.org/d746/505bad055c357fa50d394d15eb380a3f1ad3.pdf
+http://bigdatatn.blogspot.com/2017/05/spark-performance-optimization-shuffle.html
+https://ieeexplore.ieee.org/document/8125977
+https://www.ijert.org/research/shuffle-performance-in-apache-spark-IJERTV4IS020241.pdf
+http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
