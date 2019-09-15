@@ -1,5 +1,5 @@
 ** **
-## Big data platform (Spark) performance acceleration
+### Big data platform (Spark) performance acceleration
 
 ## 1. Vision and Goals Of The Project: 
 
@@ -8,3 +8,6 @@ Optimize the partitioning and shuffle algorithms in Spark, to perform more effic
 * Provide an analysis of an existing project highlighting areas of possible improvements
 * Provide possible Spark performance acceleration strategies by optimizing the shuffle and partitioning algorithms.
 * Implement a new shuffle/merge manager, and insert it into the Spark software stack.
+
+## 2. Users/Personas Of The Project
+Engineers or Data scientists working on Big Data projects that use batch processing and/or real-time processing using Spark. 
