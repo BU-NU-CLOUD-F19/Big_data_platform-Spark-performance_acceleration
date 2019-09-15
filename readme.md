@@ -22,11 +22,11 @@ Engineers or Data scientists working on Big Data projects that use batch process
 * (Optional) Possible improvements using caching of meta-data.
 
 ### Features:
-* _Onboarding_: Designing a service that is easy to onboard
-* _User-friendly_: A service that is easy to understand and use
-* _Availability_: It will be accessible in all regions
-* _Scalability_: Can scale to a large number of users, projects, and services
-* _Confidentiality_: It will be a completely abstracted service.
-* _Fault-tolerant_: Final output will not be changed compared with original applications, and the service will be resilient
+* **Onboarding**: Designing a service that is easy to onboard
+* **User-friendly**: A service that is easy to understand and use
+* **Availability**: It will be accessible in all regions
+* **Scalability**: Can scale to a large number of users, projects, and services
+* **Confidentiality**: It will be a completely abstracted service.
+* **Fault-tolerant**: Final output will not be changed compared with original applications, and the service will be resilient
 
 
