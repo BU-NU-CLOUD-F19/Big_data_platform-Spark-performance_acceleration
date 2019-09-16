@@ -49,7 +49,7 @@ http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
 ## 5. Acceptance criteria
 Any improvement (fewer get-requests during the shuffling phase, less data loading into memory, less running time, etc.)
 
-### Stretch Goals:
+ *Stretch Goals:*
 Test the service/plug-in on different categories of Spark applications and deployment environment.
 Optimizing the solution for different data-sets other than one we identified in the beginning.
 
