@@ -45,3 +45,23 @@ https://ieeexplore.ieee.org/document/8125977
 https://www.ijert.org/research/shuffle-performance-in-apache-spark-IJERTV4IS020241.pdf
 http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
 
+
+## 5. Acceptance criteria
+Any improvement (fewer get-requests during the shuffling phase, less data loading into memory, less running time, etc.)
+
+### Stretch Goals:
+Test the service/plug-in on different categories of Spark applications and deployment environment.
+Optimizing the solution for different data-sets other than one we identified in the beginning.
+
+## 6. Release Planning
+* Setting up the Spark Environment (latest version)
+* Learn more about Spark and Hadoop
+* Finding an appropriate dataset/project to perform analysis
+* Run Spark applications and profile Spark performance on the dataset identified in step 3
+* Evaluate possible benchmarks:
+   * Total time of Spark application (e.g., Sorting, Spark Query)
+   * IOPs on hard drives
+* Research: Where to modify/extend 
+* Implement a new shuffle/merge manager, and insert it into the Spark software stack.
+* Profile the after enhancement Spark performance
+
