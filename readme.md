@@ -32,6 +32,7 @@ Engineers or Data scientists working on Big Data projects that use batch process
 More research work needs to be done to correctly identify possible solutions.
 
  Here are some references we are using at the moment to work on the solution:
+
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 https://databricks.com/session/sos-optimizing-shuffle-i-o
 https://pdfs.semanticscholar.org/d746/505bad055c357fa50d394d15eb380a3f1ad3.pdf
