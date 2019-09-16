@@ -23,7 +23,6 @@ Engineers or Data scientists working on Big Data projects that use batch process
 * Run an existing spark project on the AWS EC2 cluster and analyze run times with different sizes of the dataset.
 * Use spark history server and other tools to analyze stages, I/O operations and amount of shuffled data, to analyze what can be the areas for improvement.
 * Provide improved speed-up metrics.
-* (Optional) Possible improvements using caching of meta-data.
 
 
 ## 4. Solution Concept
@@ -50,15 +49,23 @@ Any improvement (fewer get-requests during the shuffling phase, less data loadin
 * Optimizing the solution for different data-sets other than one we identified in the beginning.
 
 ## 6. Release Planning
-* Setting up the Spark Environment (latest version)
-* Learn more about Spark and Hadoop
-* Finding an appropriate dataset/project to perform analysis
-* Run Spark applications and profile Spark performance on the dataset identified in step 3
-* Evaluate possible benchmarks:
-   * Total time of Spark application (e.g., Sorting, Spark Query)
-   * IOPs on hard drives
-* Research: Where to modify/extend 
-* Implement a new shuffle/merge manager, and insert it into the Spark software stack.
-* Profile the after enhancement Spark performance
+**16th September - 29th September:** 
+
+Setup environment, find two or three proper datasets, detailed research on possible solutions, run some sample queries/jobs
+**30th September - 13th October:**
+
+Find the bottleneck of queries/jobs, hard-code some plugins to test if directions are correct, design algorithm/strategies
+**14th October - 27th October:**
+
+Work on the backlog, Test the correctness of algorithm
+**28th October - 10th November:**
+
+Improvements/ Fine tune of algorithm/strategies
+**11th November - 24th November:**
+
+Continue working on possible improvements
+**25th November - 8th December:**
+
+Make a final presentation, Focus on stretch goals
 
 ** **
