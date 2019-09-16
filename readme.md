@@ -25,14 +25,6 @@ Engineers or Data scientists working on Big Data projects that use batch process
 * Provide improved speed-up metrics.
 * (Optional) Possible improvements using caching of meta-data.
 
-### Features:
-* **Onboarding:** Designing a service that is easy to onboard
-* **User-friendly:** A service that is easy to understand and use
-* **Availability:** It will be accessible in all regions
-* **Scalability:** Can scale to a large number of users, projects, and services
-* **Confidentiality:** It will be a completely abstracted service.
-* **Fault-tolerant:** Final output will not be changed compared with original applications, and the service will be resilient
-* **Low-latency:** It has to be a low-latency service
 
 ## 4. Solution Concept
 
