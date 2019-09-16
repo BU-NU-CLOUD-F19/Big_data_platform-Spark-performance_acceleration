@@ -32,6 +32,8 @@ Engineers or Data scientists working on Big Data projects that use batch process
 
 ## 4. Solution Concept
 
+![image alt text](sparkArch.png)
+
 More research work needs to be done to correctly identify possible solutions.
 
  Here are some references we are using at the moment to work on the solution:
@@ -42,3 +44,4 @@ http://bigdatatn.blogspot.com/2017/05/spark-performance-optimization-shuffle.htm
 https://ieeexplore.ieee.org/document/8125977
 https://www.ijert.org/research/shuffle-performance-in-apache-spark-IJERTV4IS020241.pdf
 http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
+
