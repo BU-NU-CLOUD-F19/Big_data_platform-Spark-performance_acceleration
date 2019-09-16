@@ -32,7 +32,6 @@ Engineers or Data scientists working on Big Data projects that use batch process
 More research work needs to be done to correctly identify possible solutions.
 
  Here are some references we are using at the moment to work on the solution:
-
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 https://databricks.com/session/sos-optimizing-shuffle-i-o
 https://pdfs.semanticscholar.org/d746/505bad055c357fa50d394d15eb380a3f1ad3.pdf
@@ -43,13 +42,33 @@ http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
 
 
 ## 5. Acceptance criteria
-Any improvement (fewer get-requests during the shuffling phase, less data loading into memory, less running time, etc.)
+Improvements during the shuffling phase:
+* Fewer I/O requests in general
+* Less disk I/O during shuffling phase
+* Less running time
 
- **Stretch Goals:**
+**Stretch Goals:**
 * Test the service/plug-in on different categories of Spark applications and deployment environment.
-* Optimizing the solution for different data-sets other than one we identified in the beginning.
+* Design some simple strategies that decide when to merge shuffling overhead when not to.
+* Provide explanations of why there is no general method which could apply to all datasets
+* Implement improvements on data partitioning phase 
 
 ## 6. Release Planning
+### Tasks: ###
+
+* Setting up the Spark Environment (latest version)
+* Learn more about Spark and Hadoop
+* Finding an appropriate dataset/project to perform analysis
+* Run Spark applications and profile Spark performance on the dataset identified in step 3
+* Evaluate possible benchmarks:
+  * Total time of Spark application (e.g., Sorting, Spark Query)
+  * IOPs on hard drives
+* Research: Where to modify/extend 
+* Implement a new shuffle/merge manager, and insert it into the Spark software stack.
+* Profile the after enhancement Spark performance
+
+### Timeline: ###
+
 **16th September - 29th September:** 
 
 Setup environment, find two or three proper datasets, detailed research on possible solutions, run some sample queries/jobs
