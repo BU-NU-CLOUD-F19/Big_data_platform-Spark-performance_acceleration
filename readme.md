@@ -50,8 +50,8 @@ http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
 Any improvement (fewer get-requests during the shuffling phase, less data loading into memory, less running time, etc.)
 
  **Stretch Goals:**
-Test the service/plug-in on different categories of Spark applications and deployment environment.
-Optimizing the solution for different data-sets other than one we identified in the beginning.
+* Test the service/plug-in on different categories of Spark applications and deployment environment.
+* Optimizing the solution for different data-sets other than one we identified in the beginning.
 
 ## 6. Release Planning
 * Setting up the Spark Environment (latest version)
