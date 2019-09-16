@@ -3,7 +3,11 @@
 
 ## 1. Vision and Goals Of The Project: 
 
+Shuffling could become the scaling bottleneck when running many small tasks in multistage data analysis jobs. In certain circumstances, data is too large to fit into memory, intermediate data has to keep on disks, which makes a large amount of small random I/O requests significantly slow down the performance of spark.
+
+
 Optimize the partitioning and shuffle algorithms in Spark, to perform more efficient I/O and shuffling. There is believed to be a significant opportunity for improvement in changing the I/O patterns so that large data files are read more efficiently from disk.
+
 * Research the current spark architecture/workflow
 * Provide an analysis of an existing project highlighting areas of possible improvements
 * Provide possible Spark performance acceleration strategies by optimizing the shuffle and partitioning algorithms.
