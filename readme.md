@@ -52,18 +52,23 @@ Any improvement (fewer get-requests during the shuffling phase, less data loadin
 **16th September - 29th September:** 
 
 Setup environment, find two or three proper datasets, detailed research on possible solutions, run some sample queries/jobs
+
 **30th September - 13th October:**
 
 Find the bottleneck of queries/jobs, hard-code some plugins to test if directions are correct, design algorithm/strategies
+
 **14th October - 27th October:**
 
 Work on the backlog, Test the correctness of algorithm
+
 **28th October - 10th November:**
 
 Improvements/ Fine tune of algorithm/strategies
+
 **11th November - 24th November:**
 
 Continue working on possible improvements
+
 **25th November - 8th December:**
 
 Make a final presentation, Focus on stretch goals
