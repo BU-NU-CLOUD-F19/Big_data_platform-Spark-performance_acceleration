@@ -22,8 +22,7 @@ People developing Spark applications.
 * Provide a design architecture of Riffle proposed in the riffle paper.
 * Analyze and understand the existing code of spark, especially that of the shuffle phase.
 * Setup both local and cloud environments to run spark jobs.
-* Setup both local and cloud environments to run spark jobs.
-* Provide a detailed analysis based on metrics (speed-up, diffe
+* Provide a detailed analysis based on metrics (speed-up, difference in number of disk i/o operations) to compare the performances of the job run before and after riffle implementation.
 
 
 
@@ -50,16 +49,18 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
 
 ## 5. Acceptance criteria
-Improvements during the shuffling phase:
-* Fewer I/O requests in general
-* Less disk I/O during shuffling phase
-* Less running time
+
+* Implement Riffle’s N-Way merge algorithm.
+* Prove a decrease in the number of I/O operations by the reduce phase.
+* Prove speed-up in the total execution time of the spark job before and after implementation of Riffle.
 
 **Stretch Goals:**
-* Test the service/plug-in on different categories of Spark applications and deployment environment.
-* Design some simple strategies that decide when to merge shuffling overhead when not to.
-* Provide explanations of why there is no general method which could apply to all datasets
-* Implement improvements on data partitioning phase 
+
+
+* Analyze the difference between different disks/file systems on AWS.
+* Find the relationship between N and file attributes(number, length, type of spark job).
+* Finding better storage techniques that improve in-memory storage capacity.
+* Implementing merge policy to choose between N-Way merge and fixed-size block merge.
 
 ## 6. Release Planning
 ### Tasks: ###
