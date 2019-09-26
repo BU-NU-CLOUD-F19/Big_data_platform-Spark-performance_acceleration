@@ -31,9 +31,20 @@ People developing Spark applications.
 
 ![image alt text](sparkArch.png)
 
-More research work needs to be done to correctly identify possible solutions.
+**Aggregate:** This starts aggregation once N map outputs are generated.
+
+### Current Implementation: ###
+The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing.
+
+### Observation: ###
+A lot of time is wasted in waiting for the map jobs to finish. Since reduce requires all the map outputs, the current implementation has that many i/o operations to do. 
+
+### Improvements proposed: ###
+As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by starting to merge map outputs the moment “N” outputs are generated, This way, the time which was previously being wasted is utilized efficiently and therefore does not contribute to additional time in merging. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
+
 
  Here are some references we are using at the moment to work on the solution:
+ 
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
 
@@ -56,31 +67,27 @@ Improvements during the shuffling phase:
 * Setting up the Spark Environment (latest version)
 * Learn more about Spark and Hadoop
 * Finding an appropriate dataset/project to perform analysis
-* Run Spark applications and profile Spark performance on the dataset identified in step 3
-* Evaluate possible benchmarks:
-  * Total time of Spark application (e.g., Sorting, Spark Query)
-  * IOPs on hard drives
-* Research: Where to modify/extend 
-* Implement a new shuffle/merge manager, and insert it into the Spark software stack.
-* Profile the after enhancement Spark performance
+* Analyze and understand the existing spark code and rest API, especially for the spark shuffle phase.
+* Run Spark applications and profile Spark performance before and after riffle implementation.:
+* Providing detailed analysis based on metrics(speed-up, the difference in number of I/O operations) on different spark jobs(single and multi-stage).
 
 ### Timeline: ###
 
 **16th September - 29th September:** 
 
-Setup environment, find two or three proper datasets, detailed research on possible solutions, run some sample queries/jobs
+Setup environment, find the existing spark code, read and summarize riffle paper, learn thoroughly about the spark architecture and their phases: map, shuffle and reduce
 
 **30th September - 13th October:**
 
-Find the bottleneck of queries/jobs, hard-code some plugins to test if directions are correct, design algorithm/strategies
+Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge, start the implementation of N-Way merge algorithm. 
 
 **14th October - 27th October:**
 
-Work on the backlog, Test the correctness of algorithm
+Work on the backlog, continue implementation of N-Way merge and test the correctness of algorithm implemented so far.
 
 **28th October - 10th November:**
 
-Improvements/ Fine tune of algorithm/strategies
+Brainstorm on improvements/ fine-tuning of algorithm/strategies and possibly implement them.
 
 **11th November - 24th November:**
 
