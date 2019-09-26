@@ -41,11 +41,9 @@ A lot of time is wasted in waiting for the map jobs to finish. Since reduce requ
 ### Improvements proposed: ###
 As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by starting to merge map outputs the moment “N” outputs are generated, This way, the time which was previously being wasted is utilized efficiently and therefore does not contribute to additional time in merging. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
 
-
  Here are some reference we are using at the moment to work on the solution:
  
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
-
 
 
 ## 5. Acceptance criteria
@@ -56,7 +54,6 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
 **Stretch Goals:**
 
-
 * Analyze the difference between different disks/file systems on AWS.
 * Find the relationship between N and file attributes(number, length, type of spark job).
 * Finding better storage techniques that improve in-memory storage capacity.
@@ -66,10 +63,10 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 ### Tasks: ###
 
 * Setting up the Spark Environment (latest version)
-* Learn more about Spark and Hadoop
-* Finding an appropriate dataset/project to perform analysis
+* Learn more about Spark Architecture(Map, shuffle and Reduce phase).
+* Finding an appropriate dataset/project to perform analysis.
 * Analyze and understand the existing spark code and rest API, especially for the spark shuffle phase.
-* Run Spark applications and profile Spark performance before and after riffle implementation.:
+* Run Spark applications and profile Spark performance before and after riffle implementation.
 * Providing detailed analysis based on metrics(speed-up, the difference in number of I/O operations) on different spark jobs(single and multi-stage).
 
 ### Timeline: ###
@@ -80,7 +77,7 @@ Setup environment, find the existing spark code, read and summarize riffle paper
 
 **30th September - 13th October:**
 
-Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge, start the implementation of N-Way merge algorithm. 
+Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge,find the appropriate data set, start the implementation of N-Way merge algorithm. 
 
 **14th October - 27th October:**
 
