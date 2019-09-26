@@ -42,7 +42,7 @@ A lot of time is wasted in waiting for the map jobs to finish. Since reduce requ
 As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by starting to merge map outputs the moment “N” outputs are generated, This way, the time which was previously being wasted is utilized efficiently and therefore does not contribute to additional time in merging. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
 
 
- Here are some references we are using at the moment to work on the solution:
+ Here are some reference we are using at the moment to work on the solution:
  
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
