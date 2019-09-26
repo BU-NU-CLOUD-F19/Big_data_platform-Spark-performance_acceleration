@@ -8,21 +8,23 @@ Shuffling could become the scaling bottleneck when running many small tasks in m
 
 Optimize the partitioning and shuffle algorithms in Spark, to perform more efficient I/O and shuffling. There is believed to be a significant opportunity for improvement in changing the I/O patterns so that large data files are read more efficiently from disk.
 
-* Research the current spark architecture/workflow
-* Provide an analysis of an existing project highlighting areas of possible improvements
-* Provide possible Spark performance acceleration strategies by optimizing the shuffle and partitioning algorithms.
-* Implement a new shuffle/merge manager, and insert it into the Spark software stack.
+* Improve the efficiency of the Spark shuffle phase, better than vanilla spark.
+* Decrease the number of I/O operations for the reduce phase.
+* Implement the N-way merge in the shuffle phase for improving efficiency.
+* Experiment over different single and multi-stage jobs.
+* Analyze, using different metrics, the performance improvement over vanilla spark.
 
 ## 2. Users/Personas Of The Project
-Engineers or Data scientists working on Big Data projects that use batch processing and/or real-time processing using Spark. 
+People developing Spark applications.
 
 ## 3. Scope and Features Of The Project:
 ### Scope:
-* Researching the existing solutions/papers to identify the best approach.
-* Find a dataset and upload it to AWS S3.
-* Run an existing spark project on the AWS EC2 cluster and analyze run times with different sizes of the dataset.
-* Use spark history server and other tools to analyze stages, I/O operations and amount of shuffled data, to analyze what can be the areas for improvement.
-* Provide improved speed-up metrics.
+* Provide a design architecture of Riffle proposed in the riffle paper.
+* Analyze and understand the existing code of spark, especially that of the shuffle phase.
+* Setup both local and cloud environments to run spark jobs.
+* Setup both local and cloud environments to run spark jobs.
+* Provide a detailed analysis based on metrics (speed-up, diffe
+
 
 
 ## 4. Solution Concept
@@ -33,12 +35,7 @@ More research work needs to be done to correctly identify possible solutions.
 
  Here are some references we are using at the moment to work on the solution:
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
-https://databricks.com/session/sos-optimizing-shuffle-i-o
-https://pdfs.semanticscholar.org/d746/505bad055c357fa50d394d15eb380a3f1ad3.pdf
-http://bigdatatn.blogspot.com/2017/05/spark-performance-optimization-shuffle.html
-https://ieeexplore.ieee.org/document/8125977
-https://www.ijert.org/research/shuffle-performance-in-apache-spark-IJERTV4IS020241.pdf
-http://iqua.ece.toronto.edu/papers/sliu-icdcs17.pdf
+
 
 
 ## 5. Acceptance criteria
