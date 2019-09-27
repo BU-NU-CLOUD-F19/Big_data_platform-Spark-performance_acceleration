@@ -75,6 +75,8 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
 Setup environment, find the existing spark code, read and summarize riffle paper, learn thoroughly about the spark architecture and their phases: map, shuffle and reduce
 
+Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHXYOnMyJf1dvMkP
+
 **30th September - 13th October:**
 
 Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge,find the appropriate data set, start the implementation of N-Way merge algorithm. 
