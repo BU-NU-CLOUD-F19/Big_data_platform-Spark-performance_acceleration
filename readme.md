@@ -82,6 +82,7 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHXYOnMyJf1dvMkP
 Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge,find the appropriate data set, start the implementation of N-Way merge algorithm.
 
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHidtUcEnSf759UO 
+Paper Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHotq5uGxGZmb2EV
 
 **14th October - 27th October:**
 
