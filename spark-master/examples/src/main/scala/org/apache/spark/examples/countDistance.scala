@@ -24,7 +24,7 @@ import util.control.Breaks._
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
-object wordCount {
+object countDistance {
 
   def getMin(a: Int, b: Int): Int = {
     if (a == -1) return b
