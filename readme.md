@@ -88,6 +88,7 @@ Paper Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHotq5uGxGZmb2EV
 **14th October - 27th October:**
 
 Work on the backlog, continue implementation of N-Way merge and test the correctness of algorithm implemented so far.
+Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHziF9GZFdaXCy_h
 
 **28th October - 10th November:**
 
