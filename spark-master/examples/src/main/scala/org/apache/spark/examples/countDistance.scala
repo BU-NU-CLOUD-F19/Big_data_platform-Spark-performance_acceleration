@@ -49,7 +49,7 @@ object countDistance {
     val spark = new SparkContext(conf)
 
     // Read the input
-    val lines = spark.textFile("/Users/grishmathakkar/Desktop/FCC/Big_data_platform-Spark-performance_acceleration/spark-master/examples/src/main/scala/org/apache/spark/examples/input")
+    val lines = spark.textFile("./examples/src/main/scala/org/apache/spark/examples/input")
 
     // Get the MAX threshold
     val MAX = 20
@@ -62,9 +62,6 @@ object countDistance {
       val parts = s.split(",")
       (parts(0), parts(1))
     }
-      // Filter out values above the threshold MAX
-      .filter(x => x._1.toInt <= MAX && x._2.toInt <= MAX)
-
       // pre-process the data to remove duplicates
       .distinct()
 
@@ -105,6 +102,7 @@ object countDistance {
 
     // save the output
 //    distances.saveAsTextFile(args(1))
+     print(distances.toDebugString);
      distances.collect().foreach(x => println(x))
   }
 }
