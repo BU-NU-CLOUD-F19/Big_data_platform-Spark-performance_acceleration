@@ -38,7 +38,8 @@ import org.apache.spark.util.{Utils => TryUtils}
  * Sorts and potentially merges a number of key-value pairs of type (K, V) to produce key-combiner
  * pairs of type (K, C). Uses a Partitioner to first group the keys into partitions, and then
  * optionally sorts keys within each partition using a custom Comparator. Can output a single
- * partitioned file with a different byte range for each partition, suitable for shuffle fetches.
+ * partitioned file with a different byte range
+ * for each partition, suitable for shuffle fetches.
  *
  * If combining is disabled, the type C must equal V -- we'll cast the objects at the end.
  *

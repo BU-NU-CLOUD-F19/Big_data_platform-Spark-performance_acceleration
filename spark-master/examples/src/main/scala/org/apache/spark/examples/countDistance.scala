@@ -101,7 +101,6 @@ object countDistance {
     }
 
     // save the output
-//    distances.saveAsTextFile(args(1))
      print(distances.toDebugString);
      distances.collect().foreach(x => println(x))
   }
