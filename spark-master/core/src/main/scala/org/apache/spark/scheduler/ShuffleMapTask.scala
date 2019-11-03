@@ -90,8 +90,6 @@ private[spark] class ShuffleMapTask(
     } else 0L
     val rdd = rddAndDep._1
     val dep = rddAndDep._2
-    log.info("##########")
-    rdd.iterator(partition, context).foreach(x => log.info(x.toString))
     dep.shuffleWriterProcessor.write(rdd, dep, context, partition)
   }
 

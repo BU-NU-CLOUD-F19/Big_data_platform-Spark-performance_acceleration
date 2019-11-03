@@ -105,4 +105,9 @@ private[spark] object SortShuffleWriter {
       dep.partitioner.numPartitions <= bypassMergeThreshold
     }
   }
+
+  def shouldNWayMerge(conf: SparkConf, dep: ShuffleDependency[_, _, _]): Boolean = {
+    // We cannot bypass sorting if we need to do map-side aggregation.
+    dep.isNWayMerge
+  }
 }
