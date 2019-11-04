@@ -96,6 +96,7 @@ private[spark] class SortShuffleManager(conf: SparkConf) extends ShuffleManager 
       dependency: ShuffleDependency[K, V, C]): ShuffleHandle = {
 
     if(SortShuffleWriter.shouldNWayMerge(conf, dependency)) {
+      //If we want to decrease the number of partitions read by shuffle reader, we do a N-Way merge
       new NWayMergeHandle[K, V](
         shuffleId, dependency.asInstanceOf[ShuffleDependency[K, V, V]])
     } else if (SortShuffleWriter.shouldBypassMergeSort(conf, dependency)) {
