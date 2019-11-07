@@ -400,8 +400,14 @@ private[spark] class DAGScheduler(
     if (!mapOutputTracker.containsShuffle(shuffleDep.shuffleId)) {
       // Kind of ugly: need to register RDDs with the cache and map output tracker here
       // since we can't do it in the RDD constructor because # of partitions is unknown
-      logInfo("Registering RDD " + rdd.id + " (" + rdd.getCreationSite + ")")
-      mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
+      if(shuffleDep.isNWayMerge){
+        logInfo("Registering RDD for N-Way merge " + rdd.id + " (" + rdd.getCreationSite + ")")
+        mapOutputTracker.registerNWayMergeShuffle(shuffleDep.shuffleId, rdd.partitions.length, 1)
+      }
+      else {
+        logInfo("Registering RDD " + rdd.id + " (" + rdd.getCreationSite + ")")
+        mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
+      }
     }
     stage
   }

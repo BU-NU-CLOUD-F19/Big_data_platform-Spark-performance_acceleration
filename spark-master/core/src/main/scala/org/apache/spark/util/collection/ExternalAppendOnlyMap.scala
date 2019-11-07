@@ -162,7 +162,9 @@ class ExternalAppendOnlyMap[K, V, C](
         currentMap = new SizeTrackingAppendOnlyMap[K, C]
       }
       currentMap.changeValue(curEntry._1, update)
-      addElementsRead()
+      log.info("Current Map: -------------------------------------")
+      currentMap.foreach(x => log.info(x.toString()))
+       addElementsRead()
     }
   }
 

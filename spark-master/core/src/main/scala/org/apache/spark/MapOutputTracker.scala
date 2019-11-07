@@ -452,6 +452,12 @@ private[spark] class MapOutputTrackerMaster(
     shuffleStatuses.valuesIterator.count(_.hasCachedSerializedBroadcast)
   }
 
+  def registerNWayMergeShuffle(shuffleId: Int, numMaps: Int, N: Int): Unit = {
+    if (shuffleStatuses.put(shuffleId, new ShuffleStatus(numMaps/N + numMaps%N)).isDefined) {
+      throw new IllegalArgumentException("Shuffle ID " + shuffleId + " registered twice")
+    }
+  }
+
   def registerShuffle(shuffleId: Int, numMaps: Int): Unit = {
     if (shuffleStatuses.put(shuffleId, new ShuffleStatus(numMaps)).isDefined) {
       throw new IllegalArgumentException("Shuffle ID " + shuffleId + " registered twice")

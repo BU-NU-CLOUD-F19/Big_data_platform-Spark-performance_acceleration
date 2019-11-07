@@ -94,7 +94,12 @@ private[spark] class SortShuffleManager(conf: SparkConf) extends ShuffleManager 
   override def registerShuffle[K, V, C](
       shuffleId: Int,
       dependency: ShuffleDependency[K, V, C]): ShuffleHandle = {
-    if (SortShuffleWriter.shouldBypassMergeSort(conf, dependency)) {
+
+    if(SortShuffleWriter.shouldNWayMerge(conf, dependency)) {
+      //If we want to decrease the number of partitions read by shuffle reader, we do a N-Way merge
+      new NWayMergeHandle[K, V](
+        shuffleId, dependency.asInstanceOf[ShuffleDependency[K, V, V]])
+    } else if (SortShuffleWriter.shouldBypassMergeSort(conf, dependency)) {
       // If there are fewer than spark.shuffle.sort.bypassMergeThreshold partitions and we don't
       // need map-side aggregation, then write numPartitions files directly and just concatenate
       // them at the end. This avoids doing serialization and deserialization twice to merge
@@ -152,6 +157,14 @@ private[spark] class SortShuffleManager(conf: SparkConf) extends ShuffleManager 
         new BypassMergeSortShuffleWriter(
           env.blockManager,
           bypassMergeSortHandle,
+          mapId,
+          env.conf,
+          metrics,
+          shuffleExecutorComponents)
+      case mergeNWayShuffleHandle: NWayMergeHandle[K @unchecked, V @unchecked] =>
+        new NWayMergeWriter(
+          env.blockManager,
+          mergeNWayShuffleHandle,
           mapId,
           env.conf,
           metrics,
@@ -242,5 +255,15 @@ private[spark] class SerializedShuffleHandle[K, V](
 private[spark] class BypassMergeSortShuffleHandle[K, V](
   shuffleId: Int,
   dependency: ShuffleDependency[K, V, V])
+  extends BaseShuffleHandle(shuffleId, dependency) {
+}
+
+/**
+ * Subclass of [[BaseShuffleHandle]], used to identify when we've chosen to use the
+ * N-Way merge shuffle path.
+ */
+private[spark] class NWayMergeHandle[K, V](
+   shuffleId: Int,
+   dependency: ShuffleDependency[K, V, V])
   extends BaseShuffleHandle(shuffleId, dependency) {
 }
