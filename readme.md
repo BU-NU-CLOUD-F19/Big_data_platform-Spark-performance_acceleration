@@ -93,6 +93,7 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHziF9GZFdaXCy_h
 **28th October - 10th November:**
 
 Brainstorm on improvements/ fine-tuning of algorithm/strategies and possibly implement them.
+Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQGpueCx88jb73_i
 
 **11th November - 24th November:**
 
