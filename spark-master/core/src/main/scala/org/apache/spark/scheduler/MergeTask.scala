@@ -36,7 +36,6 @@ private[spark] class MergeTask(
 
   override def runTask(context: TaskContext): Unit ={
     logInfo("Starting with the merge task!")
-   // MergerReader(Seq[] block )
     val threadMXBean = ManagementFactory.getThreadMXBean
     val deserializeStartTimeNs = System.nanoTime()
     val deserializeStartCpuTime = if (threadMXBean.isCurrentThreadCpuTimeSupported) {
@@ -50,10 +49,6 @@ private[spark] class MergeTask(
       threadMXBean.getCurrentThreadCpuTime - deserializeStartCpuTime
     } else 0L
     val dep  = rddAndDep._2;
-    val blockManager: BlockManager = SparkEnv.get.blockManager;
-    val blockResolver = new IndexShuffleBlockResolver(SparkEnv.get.conf, blockManager);
-    val file2 = blockResolver.getDataFile(dep.shuffleId,context.taskAttemptId());
-
     val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
     val mergeWriter: MergeWriter = new MergeWriter(dep.shuffleId, context.taskAttemptId());
     val indexByteBuffer = mergeReader.getIndexFile();
