@@ -32,17 +32,17 @@ public class MergeReader {
         indexFile = blockResolver.getIndexFile(shuffleId, mapId);
         allocateBuffer(capacity);
         dataFileInputStream = openStream(dataFile);
-        dataFileChannel = openChannel(dataFile);
+        dataFileChannel = openChannel(dataFileInputStream);
         indexFileInputStream = openStream(indexFile);
-        indexFileChannel = openChannel(indexFile);
+        indexFileChannel = openChannel(indexFileInputStream);
     }
 
     private FileInputStream openStream(File file) throws FileNotFoundException {
         return new FileInputStream(file);
     }
 
-    private FileChannel openChannel(File file) throws FileNotFoundException {
-        return openStream(file).getChannel();
+    private FileChannel openChannel(FileInputStream fileInputStream) throws FileNotFoundException {
+        return fileInputStream.getChannel();
     }
 
     public void allocateBuffer(int capacity){
@@ -51,7 +51,7 @@ public class MergeReader {
 
     public ByteBuffer readDatafile() throws IOException {
         byteBuffer.clear();
-        int count = openChannel(dataFile).read(byteBuffer);
+        int count = dataFileChannel.read(byteBuffer);
         if((count <= 0)){
             isReadComplete = true;
         }
