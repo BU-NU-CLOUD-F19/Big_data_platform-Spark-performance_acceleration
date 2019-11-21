@@ -17,8 +17,10 @@ public class MergeReader {
     private File dataFile;
     private File indexFile;
     private ByteBuffer byteBuffer;
-    private FileInputStream fileInputStream;
-    private FileChannel fileChannel;
+    private FileInputStream dataFileInputStream;
+    private FileChannel dataFileChannel;
+    private FileInputStream indexFileInputStream;
+    private FileChannel indexFileChannel;
     private boolean isReadComplete;
 
     public MergeReader(int shuffleId, long mapId, int capacity) throws FileNotFoundException {
@@ -27,18 +29,20 @@ public class MergeReader {
         BlockManager blockManager = SparkEnv.get().blockManager();
         IndexShuffleBlockResolver blockResolver = new IndexShuffleBlockResolver(SparkEnv.get().conf(), blockManager);
         dataFile = blockResolver.getDataFile(shuffleId, mapId);
-        indexFile = blockResolver.getDataFile(shuffleId, mapId);
+        indexFile = blockResolver.getIndexFile(shuffleId, mapId);
         allocateBuffer(capacity);
-        openStream(dataFile);
-        openChannel();
+        dataFileInputStream = openStream(dataFile);
+        dataFileChannel = openChannel(dataFile);
+        indexFileInputStream = openStream(indexFile);
+        indexFileChannel = openChannel(indexFile);
     }
 
-    private void openStream(File file) throws FileNotFoundException {
-        fileInputStream =  new FileInputStream(file);
+    private FileInputStream openStream(File file) throws FileNotFoundException {
+        return new FileInputStream(file);
     }
 
-    private void openChannel() {
-        fileChannel = fileInputStream.getChannel();
+    private FileChannel openChannel(File file) throws FileNotFoundException {
+        return openStream(file).getChannel();
     }
 
     public void allocateBuffer(int capacity){
@@ -47,11 +51,17 @@ public class MergeReader {
 
     public ByteBuffer readDatafile() throws IOException {
         byteBuffer.clear();
-        int count = fileChannel.read(byteBuffer);
+        int count = openChannel(dataFile).read(byteBuffer);
         if((count <= 0)){
             isReadComplete = true;
         }
         return byteBuffer;
+    }
+
+    public ByteBuffer getIndexFile() throws IOException {
+        ByteBuffer indexByteBuffer = ByteBuffer.allocate(1024*2000);
+        indexFileChannel.read(indexByteBuffer);
+        return indexByteBuffer;
     }
 
     public boolean isReadComplete(){
@@ -59,10 +69,12 @@ public class MergeReader {
     }
 
     public void closeChannel() throws IOException {
-        fileChannel.close();
+        dataFileInputStream.close();
+        indexFileInputStream.close();
     }
 
     public void closeFileInputStream() throws IOException {
-        fileInputStream.close();
+        dataFileInputStream.close();
+        indexFileChannel.close();
     }
 }

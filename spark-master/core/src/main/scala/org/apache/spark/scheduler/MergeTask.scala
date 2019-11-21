@@ -41,7 +41,7 @@ private[spark] class MergeTask(
   }
 
   override def runTask(context: TaskContext): Unit ={
-    logInfo("we are here in merrge.............")
+    logInfo("Starting with the merge task!")
    // MergerReader(Seq[] block )
     val threadMXBean = ManagementFactory.getThreadMXBean
     val deserializeStartTimeNs = System.nanoTime()
@@ -59,28 +59,11 @@ private[spark] class MergeTask(
     val blockManager: BlockManager = SparkEnv.get.blockManager;
     val blockResolver = new IndexShuffleBlockResolver(SparkEnv.get.conf, blockManager);
     val file2 = blockResolver.getDataFile(dep.shuffleId,context.taskAttemptId());
-//    val indexFile = blockResolver.getIndexFile( dep.shuffleId,context.taskAttemptId()-1);
-//    val channel = Files.newByteChannel(indexFile.toPath)
-//    val ina = new DataInputStream(Channels.newInputStream(channel))
-//    try {
-//      val offset = ina.readLong()
-//      val nextOffset = ina.readLong()
-//      val actualPosition = channel.position()
-//      val transportConf = SparkTransportConf.fromSparkConf(SparkEnv.get.conf, "shuffle")
-//      val buf: FileSegmentManagedBuffer = new FileSegmentManagedBuffer(
-//        transportConf,
-//        file,
-//        offset,
-//        nextOffset - offset)
-//      buf.convertToNetty()
-//    } finally {
-//      ina.close()
-//    }
-
 
     val out = new FileOutputStream(file2, true)
     val outChannel: FileChannel = out.asInstanceOf[FileOutputStream].getChannel()
     val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
+    val indexByteBuffer = mergeReader.getIndexFile();
     while(!mergeReader.isReadComplete)
     {
       outChannel.write(mergeReader.readDatafile().flip().asInstanceOf[ByteBuffer])
@@ -88,8 +71,6 @@ private[spark] class MergeTask(
     mergeReader.closeChannel();
     mergeReader.closeFileInputStream();
     outChannel.close();
-
-    "something"
   }
   override def preferredLocations: Seq[TaskLocation] = preferredLocs
 
