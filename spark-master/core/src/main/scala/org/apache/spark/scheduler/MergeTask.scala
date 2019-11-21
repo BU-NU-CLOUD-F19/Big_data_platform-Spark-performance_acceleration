@@ -1,16 +1,12 @@
 package org.apache.spark.scheduler
 
-import java.io.FileOutputStream
 import java.lang.management.ManagementFactory
 import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
 import java.util.Properties
 
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.RDD
-import org.apache.spark.shuffle.IndexShuffleBlockResolver
-import org.apache.spark.storage.BlockManager
 import org.apache.spark.{Partition, ShuffleDependency, SparkEnv, TaskContext}
 
 
