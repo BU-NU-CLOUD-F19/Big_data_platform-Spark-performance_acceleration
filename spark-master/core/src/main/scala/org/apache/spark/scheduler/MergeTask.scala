@@ -30,12 +30,6 @@ private[spark] class MergeTask(
   extends Task[Unit](stageId, stageAttemptId, partition.index, localProperties,
     serializedTaskMetrics, jobId, appId, appAttemptId, isBarrier)
     with Logging {
- //  var dep : ShuffleDependency[_, _, _];
-
-//  def this(partitionId: Int) {
-//    this(0, 0, null, new Partition { override def index: Int = 0 }, null, new Properties, null)
-//  }
-
   @transient private val preferredLocs: Seq[TaskLocation] = {
     if (locs == null) Nil else locs.toSet.toSeq
   }
@@ -60,17 +54,18 @@ private[spark] class MergeTask(
     val blockResolver = new IndexShuffleBlockResolver(SparkEnv.get.conf, blockManager);
     val file2 = blockResolver.getDataFile(dep.shuffleId,context.taskAttemptId());
 
-    val out = new FileOutputStream(file2, true)
-    val outChannel: FileChannel = out.asInstanceOf[FileOutputStream].getChannel()
     val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
+    val mergeWriter: MergeWriter = new MergeWriter(dep.shuffleId, context.taskAttemptId());
     val indexByteBuffer = mergeReader.getIndexFile();
+    mergeWriter.writeIndexFile(indexByteBuffer);
     while(!mergeReader.isReadComplete)
     {
-      outChannel.write(mergeReader.readDatafile().flip().asInstanceOf[ByteBuffer])
+     mergeWriter.writeDataFile(mergeReader.readDatafile());
     }
     mergeReader.closeChannel();
     mergeReader.closeFileInputStream();
-    outChannel.close();
+    mergeWriter.closeChannel();
+    mergeWriter.closeFileOutputStream()
   }
   override def preferredLocations: Seq[TaskLocation] = preferredLocs
 

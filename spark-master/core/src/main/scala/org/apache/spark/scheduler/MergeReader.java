@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+/**
+ * The type Merge reader.
+ */
 public class MergeReader {
     private int shuffleId;
     private long mapId;
@@ -23,6 +26,14 @@ public class MergeReader {
     private FileChannel indexFileChannel;
     private boolean isReadComplete;
 
+    /**
+     * Instantiates a new Merge reader.
+     *
+     * @param shuffleId the shuffle id
+     * @param mapId     the map id
+     * @param capacity  the capacity
+     * @throws FileNotFoundException the file not found exception
+     */
     public MergeReader(int shuffleId, long mapId, int capacity) throws FileNotFoundException {
         this.shuffleId= shuffleId;
         this.mapId = mapId;
@@ -45,10 +56,21 @@ public class MergeReader {
         return fileInputStream.getChannel();
     }
 
+    /**
+     * Allocate buffer.
+     *
+     * @param capacity the capacity
+     */
     public void allocateBuffer(int capacity){
         byteBuffer = ByteBuffer.allocate(capacity);
     }
 
+    /**
+     * Read datafile byte buffer.
+     *
+     * @return the byte buffer
+     * @throws IOException the io exception
+     */
     public ByteBuffer readDatafile() throws IOException {
         byteBuffer.clear();
         int count = dataFileChannel.read(byteBuffer);
@@ -58,21 +80,42 @@ public class MergeReader {
         return byteBuffer;
     }
 
+    /**
+     * Gets index file.
+     *
+     * @return the index file
+     * @throws IOException the io exception
+     */
     public ByteBuffer getIndexFile() throws IOException {
         ByteBuffer indexByteBuffer = ByteBuffer.allocate(1024*2000);
         indexFileChannel.read(indexByteBuffer);
         return indexByteBuffer;
     }
 
+    /**
+     * Is read complete boolean.
+     *
+     * @return the boolean
+     */
     public boolean isReadComplete(){
         return isReadComplete;
     }
 
+    /**
+     * Close channel.
+     *
+     * @throws IOException the io exception
+     */
     public void closeChannel() throws IOException {
         dataFileInputStream.close();
         indexFileInputStream.close();
     }
 
+    /**
+     * Close file input stream.
+     *
+     * @throws IOException the io exception
+     */
     public void closeFileInputStream() throws IOException {
         dataFileInputStream.close();
         indexFileChannel.close();
