@@ -2,7 +2,7 @@ package org.apache.spark.scheduler
 
 import java.io.{FileInputStream, FileOutputStream}
 import java.lang.management.ManagementFactory
-import java.nio.ByteBuffer
+import java.nio.{Buffer, ByteBuffer}
 import java.nio.channels.FileChannel
 import java.util.Properties
 
@@ -86,19 +86,22 @@ private[spark] class MergeTask(
 //    val buffert = ByteBuffer.allocate(1024)
 //    temCha.read(buffert);
 //    val fileContent = new String(buffert.array, StandardCharsets.UTF_8)
-    val in = new FileInputStream(file)
+//    val in = new FileInputStream(file)
     val out = new FileOutputStream(file2, true)
-    var flag = true;
-    val inChannel: FileChannel = in.asInstanceOf[FileInputStream].getChannel()
+//    var flag = true;
+//    val inChannel: FileChannel = in.asInstanceOf[FileInputStream].getChannel()
     val outChannel: FileChannel = out.asInstanceOf[FileOutputStream].getChannel()
-    val buffer = ByteBuffer.allocate(1024 * 1000 )
-    while(inChannel.read(buffer) > 0)
+//    val buffer = ByteBuffer.allocate(1024 * 1000 )
+
+//    inChannel.close();
+
+    val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
+    while(!mergeReader.isReadComplete)
     {
-      buffer.flip()
-      outChannel.write(buffer)
-      buffer.clear();
+      outChannel.write(mergeReader.readDatafile().flip().asInstanceOf[ByteBuffer])
     }
-    inChannel.close();
+    mergeReader.closeChannel();
+    mergeReader.closeFileInputStream();
     outChannel.close();
 
     "something"
