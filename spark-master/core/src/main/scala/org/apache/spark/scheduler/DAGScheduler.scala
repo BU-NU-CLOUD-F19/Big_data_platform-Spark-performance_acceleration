@@ -19,29 +19,27 @@ package org.apache.spark.scheduler
 
 import java.io.NotSerializableException
 import java.util.Properties
-import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 import java.util.concurrent.atomic.AtomicInteger
-
-import scala.annotation.tailrec
-import scala.collection.Map
-import scala.collection.mutable
-import scala.collection.mutable.{HashMap, HashSet, ListBuffer}
-import scala.concurrent.duration._
-import scala.util.control.NonFatal
+import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 
 import org.apache.spark._
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.executor.{ExecutorMetrics, TaskMetrics}
-import org.apache.spark.internal.Logging
-import org.apache.spark.internal.config
 import org.apache.spark.internal.config.Tests.TEST_NO_STAGE_RETRY
+import org.apache.spark.internal.{Logging, config}
 import org.apache.spark.network.util.JavaUtils
 import org.apache.spark.partial.{ApproximateActionListener, ApproximateEvaluator, PartialResult}
-import org.apache.spark.rdd.{DeterministicLevel, RDD, RDDCheckpointData}
+import org.apache.spark.rdd.{RDD, RDDCheckpointData}
 import org.apache.spark.rpc.RpcTimeout
-import org.apache.spark.storage._
 import org.apache.spark.storage.BlockManagerMessages.BlockManagerHeartbeat
+import org.apache.spark.storage._
 import org.apache.spark.util._
+
+import scala.annotation.tailrec
+import scala.collection.mutable.{HashMap, HashSet, ListBuffer}
+import scala.collection.{Map, mutable}
+import scala.concurrent.duration._
+import scala.util.control.NonFatal
 
 /**
  * The high-level scheduling layer that implements stage-oriented scheduling. It computes a DAG of
@@ -406,6 +404,7 @@ private[spark] class DAGScheduler(
       }
       else {
         logInfo("Registering RDD " + rdd.id + " (" + rdd.getCreationSite + ")")
+        mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
         mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
       }
     }
@@ -1218,15 +1217,38 @@ private[spark] class DAGScheduler(
       val serializedTaskMetrics = closureSerializer.serialize(stage.latestInfo.taskMetrics).array()
       stage match {
         case stage: ShuffleMapStage =>
+          var seq = new ListBuffer[Task[_]]()
           stage.pendingPartitions.clear()
-          partitionsToCompute.map { id =>
+          for(id <- partitionsToCompute){
             val locs = taskIdToLocations(id)
             val part = partitions(id)
             stage.pendingPartitions += id
-            new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber,
+            seq += new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber,
               taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
-              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
+              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
+
+            seq += new MergeTask(stage.id, id, stage.latestInfo.attemptNumber,
+              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
+              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
           }
+          seq;
+//          partitionsToCompute.map { id =>
+//            val locs = taskIdToLocations(id)
+//            val part = partitions(id)
+//            stage.pendingPartitions += id
+//            new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber,
+//              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
+//              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
+//
+//          }
+//          partitionsToCompute.map { id =>
+//            val locs = taskIdToLocations(id)
+//            val part = partitions(id)
+//            stage.pendingPartitions += id
+//            new MergeTask(stage.id, stage.latestInfo.attemptNumber,
+//              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
+//              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
+//          }
 
         case stage: ResultStage =>
           partitionsToCompute.map { id =>
@@ -1465,7 +1487,7 @@ private[spark] class DAGScheduler(
                 logInfo("Ignoring result from " + rt + " because its job has finished")
             }
 
-          case smt: ShuffleMapTask =>
+          case `smt`: ShuffleMapTask =>
             val shuffleStage = stage.asInstanceOf[ShuffleMapStage]
             shuffleStage.pendingPartitions -= task.partitionId
             val status = event.result.asInstanceOf[MapStatus]
@@ -1477,6 +1499,7 @@ private[spark] class DAGScheduler(
               // The epoch of the task is acceptable (i.e., the task was launched after the most
               // recent failure we're aware of for the executor), so mark the task's output as
               // available.
+
               mapOutputTracker.registerMapOutput(
                 shuffleStage.shuffleDep.shuffleId, smt.partitionId, status)
             }
@@ -1511,6 +1534,10 @@ private[spark] class DAGScheduler(
                 submitWaitingChildStages(shuffleStage)
               }
             }
+          case `mt` : MergeTask =>
+            val shuffleStage = stage.asInstanceOf[ShuffleMapStage]
+
+            logInfo("Try try//////////////////////////////////////");
         }
 
       case FetchFailed(bmAddress, shuffleId, _, mapIndex, _, failureMessage) =>
