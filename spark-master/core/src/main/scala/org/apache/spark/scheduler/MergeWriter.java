@@ -20,7 +20,6 @@ public class MergeWriter {
     private FileChannel dataFileChannel;
     private FileOutputStream indexFileOutputStream;
     private FileChannel indexFileChannel;
-    private boolean isReadComplete;
 
     /**
      * Instantiates a new Merge writer.
@@ -46,7 +45,7 @@ public class MergeWriter {
         return new FileOutputStream(file, true);
     }
 
-    private FileChannel openChannel(FileOutputStream fileInputStream) throws FileNotFoundException {
+    private FileChannel openChannel(FileOutputStream fileInputStream) {
         return fileInputStream.getChannel();
     }
 
