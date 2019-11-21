@@ -42,7 +42,7 @@ public class MergeReader {
     }
 
     public void allocateBuffer(int capacity){
-        byteBuffer = ByteBuffer.allocate(1024 * 1000);
+        byteBuffer = ByteBuffer.allocate(capacity);
     }
 
     public ByteBuffer readDatafile() throws IOException {

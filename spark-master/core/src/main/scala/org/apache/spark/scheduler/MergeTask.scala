@@ -1,8 +1,8 @@
 package org.apache.spark.scheduler
 
-import java.io.{FileInputStream, FileOutputStream}
+import java.io.FileOutputStream
 import java.lang.management.ManagementFactory
-import java.nio.{Buffer, ByteBuffer}
+import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.util.Properties
 
@@ -55,13 +55,9 @@ private[spark] class MergeTask(
     _executorDeserializeCpuTime = if (threadMXBean.isCurrentThreadCpuTimeSupported) {
       threadMXBean.getCurrentThreadCpuTime - deserializeStartCpuTime
     } else 0L
-    val rdd = rddAndDep._1
-
-   var dep  = rddAndDep._2;
-
-    var blockManager: BlockManager = SparkEnv.get.blockManager;
-    var blockResolver = new IndexShuffleBlockResolver(SparkEnv.get.conf, blockManager);
-    val file = blockResolver.getDataFile(dep.shuffleId,context.taskAttemptId()-1);
+    val dep  = rddAndDep._2;
+    val blockManager: BlockManager = SparkEnv.get.blockManager;
+    val blockResolver = new IndexShuffleBlockResolver(SparkEnv.get.conf, blockManager);
     val file2 = blockResolver.getDataFile(dep.shuffleId,context.taskAttemptId());
 //    val indexFile = blockResolver.getIndexFile( dep.shuffleId,context.taskAttemptId()-1);
 //    val channel = Files.newByteChannel(indexFile.toPath)
@@ -81,20 +77,9 @@ private[spark] class MergeTask(
 //      ina.close()
 //    }
 
-//    val temp = new FileInputStream(indexFile)
-//    val temCha: FileChannel = temp.asInstanceOf[FileInputStream].getChannel()
-//    val buffert = ByteBuffer.allocate(1024)
-//    temCha.read(buffert);
-//    val fileContent = new String(buffert.array, StandardCharsets.UTF_8)
-//    val in = new FileInputStream(file)
+
     val out = new FileOutputStream(file2, true)
-//    var flag = true;
-//    val inChannel: FileChannel = in.asInstanceOf[FileInputStream].getChannel()
     val outChannel: FileChannel = out.asInstanceOf[FileOutputStream].getChannel()
-//    val buffer = ByteBuffer.allocate(1024 * 1000 )
-
-//    inChannel.close();
-
     val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
     while(!mergeReader.isReadComplete)
     {
