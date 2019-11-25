@@ -17,16 +17,15 @@
 
 package org.apache.spark.storage
 
-import java.io.{InputStream, IOException}
+import java.io.{IOException, InputStream}
 import java.nio.channels.ClosedByInterruptException
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
+
 import javax.annotation.concurrent.GuardedBy
 
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet, Queue}
-
 import org.apache.commons.io.IOUtils
-
 import org.apache.spark.{SparkException, TaskContext}
 import org.apache.spark.internal.Logging
 import org.apache.spark.network.buffer.{FileSegmentManagedBuffer, ManagedBuffer}
@@ -48,12 +47,12 @@ import org.apache.spark.util.{CompletionIterator, TaskCompletionListener, Utils}
  * @param context [[TaskContext]], used for metrics update
  * @param shuffleClient [[BlockStoreClient]] for fetching remote blocks
  * @param blockManager [[BlockManager]] for reading local blocks
- * @param blocksByAddress list of blocks to fetch grouped by the [[BlockManagerId]].
- *                        For each block we also require two info: 1. the size (in bytes as a long
- *                        field) in order to throttle the memory usage; 2. the mapIndex for this
- *                        block, which indicate the index in the map stage.
- *                        Note that zero-sized blocks are already excluded, which happened in
- *                        [[org.apache.spark.MapOutputTracker.convertMapStatuses]].
+// * @param blocksByAddress list of blocks to fetch grouped by the [[BlockManagerId]].
+// *                        For each block we also require two info: 1. the size (in bytes as a long
+// *                        field) in order to throttle the memory usage; 2. the mapIndex for this
+// *                        block, which indicate the index in the map stage.
+// *                        Note that zero-sized blocks are already excluded, which happened in
+// *                        [[org.apache.spark.MapOutputTracker.convertMapStatuses]].
  * @param streamWrapper A function to wrap the returned input stream.
  * @param maxBytesInFlight max size (in bytes) of remote blocks to fetch at any given point.
  * @param maxReqsInFlight max number of remote requests to fetch blocks at any given point.
@@ -68,8 +67,13 @@ final class ShuffleBlockFetcherIterator(
     context: TaskContext,
     shuffleClient: BlockStoreClient,
     blockManager: BlockManager,
-    blocksByAddress: Iterator[(BlockManagerId, Seq[(BlockId, Long, Int)])],
+    /** == Self define starts == */
+    mergedBlockByAddress: Iterator[(BlockManagerId, (Seq[((BlockId, Long, Int), Seq[(BlockId, Long, Int)])], Seq[(BlockId, Long, Int)]))],
+    /** == Self define ends == */
+
+    //    blocksByAddress: Iterator[(BlockManagerId, Seq[(BlockId, Long, Int)])],    streamWrapper: (BlockId, InputStream) => InputStream,
     streamWrapper: (BlockId, InputStream) => InputStream,
+
     maxBytesInFlight: Long,
     maxReqsInFlight: Int,
     maxBlocksInFlightPerAddress: Int,
@@ -283,51 +287,181 @@ final class ShuffleBlockFetcherIterator(
     var localBlockBytes = 0L
     var remoteBlockBytes = 0L
 
-    for ((address, blockInfos) <- blocksByAddress) {
+    /** == Self define starts == */
+    for ((address, (customedMrgedBlockInfos, blockInfos)) <- mergedBlockByAddress) {
+
+//      if (address.executorId == blockManager.blockManagerId.executorId) {
+//
+//        blockInfos.find(_._2 <= 0) match {
+//          case Some((blockId, size, _)) if size < 0 =>
+//            throw new BlockException(blockId, "Negative block size " + size)
+//          case Some((blockId, size, _)) if size == 0 =>
+//            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+//          case None => // do nothing.
+//        }
+//        for ((mergedBlock, originBlocks) <- customedMrgedBlockInfos){
+//          var sum = 0
+//          for (block <- originBlocks){
+//            sum += block._2
+//          }
+//          if (sum != mergedBlock._2){
+//            log.info("merged block" +  mergedBlock + " seems broken")
+//          }
+//        }
+//        val mergedBlockInfos = mergeContinuousShuffleBlockIdsIfNeeded(
+//          blockInfos.map(info => FetchBlockInfo(info._1, info._2, info._3)).to[ArrayBuffer])
+//        localBlocks ++= mergedBlockInfos.map(info => (info.blockId, info.mapIndex))
+//        localBlockBytes += mergedBlockInfos.map(_.size).sum
+//      } else {
+//        val mergedBlockIterator = customedMrgedBlockInfos.iterator
+//        val iterator = blockInfos.iterator
+//        var curRequestSize = 0L
+//        var curBlocks = new ArrayBuffer[FetchBlockInfo]
+//        while (mergedBlockIterator.hasNext) {
+//          val ((blockId, size, mapIndex), _) = mergedBlockIterator.next()
+//          remoteBlockBytes += size
+//          if (size < 0) {
+//            throw new BlockException(blockId, "Negative block size " + size)
+//          } else if (size == 0) {
+//            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+//          } else {
+//            curBlocks += FetchBlockInfo(blockId, size, mapIndex)
+//            curRequestSize += size
+//          }
+//          if (curRequestSize >= targetRequestSize ||
+//            curBlocks.size >= maxBlocksInFlightPerAddress) {
+//            // Add this FetchRequest
+//            val mergedBlocks = mergeContinuousShuffleBlockIdsIfNeeded(curBlocks)
+//            remoteBlocks ++= mergedBlocks.map(_.blockId)
+//            remoteRequests += new FetchRequest(address, mergedBlocks)
+//            logDebug(s"Creating fetch request of $curRequestSize at $address "
+//              + s"with ${mergedBlocks.size} blocks")
+//            curBlocks = new ArrayBuffer[FetchBlockInfo]
+//            curRequestSize = 0
+//          }
+//
+//        }
+//        while (iterator.hasNext) {
+//          val (blockId, size, mapIndex) = iterator.next()
+//          remoteBlockBytes += size
+//          if (size < 0) {
+//            throw new BlockException(blockId, "Negative block size " + size)
+//          } else if (size == 0) {
+//            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+//          } else {
+//            curBlocks += FetchBlockInfo(blockId, size, mapIndex)
+//            curRequestSize += size
+//          }
+//          if (curRequestSize >= targetRequestSize ||
+//            curBlocks.size >= maxBlocksInFlightPerAddress) {
+//            // Add this FetchRequest
+//            val mergedBlocks = mergeContinuousShuffleBlockIdsIfNeeded(curBlocks)
+//            remoteBlocks ++= mergedBlocks.map(_.blockId)
+//            remoteRequests += new FetchRequest(address, mergedBlocks)
+//            logDebug(s"Creating fetch request of $curRequestSize at $address "
+//              + s"with ${mergedBlocks.size} blocks")
+//            curBlocks = new ArrayBuffer[FetchBlockInfo]
+//            curRequestSize = 0
+//          }
+//        }
+//        // Add in the final request
+//        if (curBlocks.nonEmpty) {
+//          val mergedBlocks = mergeContinuousShuffleBlockIdsIfNeeded(curBlocks)
+//          remoteBlocks ++= mergedBlocks.map(_.blockId)
+//          remoteRequests += new FetchRequest(address, mergedBlocks)
+//        }
+//      }
       if (address.executorId == blockManager.blockManagerId.executorId) {
-        blockInfos.find(_._2 <= 0) match {
-          case Some((blockId, size, _)) if size < 0 =>
-            throw new BlockException(blockId, "Negative block size " + size)
-          case Some((blockId, size, _)) if size == 0 =>
-            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
-          case None => // do nothing.
-        }
-        localBlocks ++= blockInfos.map(info => (info._1, info._3))
-        localBlockBytes += blockInfos.map(_._2).sum
-        numBlocksToFetch += localBlocks.size
-      } else {
-        val iterator = blockInfos.iterator
-        var curRequestSize = 0L
-        var curBlocks = new ArrayBuffer[FetchBlockInfo]
-        while (iterator.hasNext) {
-          val (blockId, size, mapIndex) = iterator.next()
-          remoteBlockBytes += size
-          if (size < 0) {
-            throw new BlockException(blockId, "Negative block size " + size)
-          } else if (size == 0) {
-            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
-          } else {
-            curBlocks += FetchBlockInfo(blockId, size, mapIndex)
-            remoteBlocks += blockId
-            numBlocksToFetch += 1
-            curRequestSize += size
-          }
-          if (curRequestSize >= targetRequestSize ||
-              curBlocks.size >= maxBlocksInFlightPerAddress) {
-            // Add this FetchRequest
-            remoteRequests += new FetchRequest(address, curBlocks)
-            logDebug(s"Creating fetch request of $curRequestSize at $address "
-              + s"with ${curBlocks.size} blocks")
-            curBlocks = new ArrayBuffer[FetchBlockInfo]
-            curRequestSize = 0
-          }
-        }
-        // Add in the final request
-        if (curBlocks.nonEmpty) {
-          remoteRequests += new FetchRequest(address, curBlocks)
-        }
-      }
+                blockInfos.find(_._2 <= 0) match {
+                  case Some((blockId, size, _)) if size < 0 =>
+                    throw new BlockException(blockId, "Negative block size " + size)
+                  case Some((blockId, size, _)) if size == 0 =>
+                    throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+                  case None => // do nothing.
+                }
+                localBlocks ++= blockInfos.map(info => (info._1, info._3))
+                localBlockBytes += blockInfos.map(_._2).sum
+                numBlocksToFetch += localBlocks.size
+              } else {
+                val iterator = blockInfos.iterator
+                var curRequestSize = 0L
+                var curBlocks = new ArrayBuffer[FetchBlockInfo]
+                while (iterator.hasNext) {
+                  val (blockId, size, mapIndex) = iterator.next()
+                  remoteBlockBytes += size
+                  if (size < 0) {
+                    throw new BlockException(blockId, "Negative block size " + size)
+                  } else if (size == 0) {
+                    throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+                  } else {
+                    curBlocks += FetchBlockInfo(blockId, size, mapIndex)
+                    remoteBlocks += blockId
+                    numBlocksToFetch += 1
+                    curRequestSize += size
+                  }
+                  if (curRequestSize >= targetRequestSize ||
+                      curBlocks.size >= maxBlocksInFlightPerAddress) {
+                    // Add this FetchRequest
+                    remoteRequests += new FetchRequest(address, curBlocks)
+                    logDebug(s"Creating fetch request of $curRequestSize at $address "
+                      + s"with ${curBlocks.size} blocks")
+                    curBlocks = new ArrayBuffer[FetchBlockInfo]
+                    curRequestSize = 0
+                  }
+                }
+                // Add in the final request
+                if (curBlocks.nonEmpty) {
+                  remoteRequests += new FetchRequest(address, curBlocks)
+                }
+              }
     }
+
+    /** == Self define ends == */
+//    for ((address, blockInfos) <- blocksByAddress) {
+//      if (address.executorId == blockManager.blockManagerId.executorId) {
+//        blockInfos.find(_._2 <= 0) match {
+//          case Some((blockId, size, _)) if size < 0 =>
+//            throw new BlockException(blockId, "Negative block size " + size)
+//          case Some((blockId, size, _)) if size == 0 =>
+//            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+//          case None => // do nothing.
+//        }
+//        localBlocks ++= blockInfos.map(info => (info._1, info._3))
+//        localBlockBytes += blockInfos.map(_._2).sum
+//        numBlocksToFetch += localBlocks.size
+//      } else {
+//        val iterator = blockInfos.iterator
+//        var curRequestSize = 0L
+//        var curBlocks = new ArrayBuffer[FetchBlockInfo]
+//        while (iterator.hasNext) {
+//          val (blockId, size, mapIndex) = iterator.next()
+//          remoteBlockBytes += size
+//          if (size < 0) {
+//            throw new BlockException(blockId, "Negative block size " + size)
+//          } else if (size == 0) {
+//            throw new BlockException(blockId, "Zero-sized blocks should be excluded.")
+//          } else {
+//            curBlocks += FetchBlockInfo(blockId, size, mapIndex)
+//            remoteBlocks += blockId
+//            numBlocksToFetch += 1
+//            curRequestSize += size
+//          }
+//          if (curRequestSize >= targetRequestSize ||
+//              curBlocks.size >= maxBlocksInFlightPerAddress) {
+//            // Add this FetchRequest
+//            remoteRequests += new FetchRequest(address, curBlocks)
+//            logDebug(s"Creating fetch request of $curRequestSize at $address "
+//              + s"with ${curBlocks.size} blocks")
+//            curBlocks = new ArrayBuffer[FetchBlockInfo]
+//            curRequestSize = 0
+//          }
+//        }
+//        // Add in the final request
+//        if (curBlocks.nonEmpty) {
+//          remoteRequests += new FetchRequest(address, curBlocks)
+//        }
+//      }
+//    }
     val totalBytes = localBlockBytes + remoteBlockBytes
     logInfo(s"Getting $numBlocksToFetch (${Utils.bytesToString(totalBytes)}) non-empty blocks " +
       s"including ${localBlocks.size} (${Utils.bytesToString(localBlockBytes)}) local blocks and " +
@@ -335,6 +469,50 @@ final class ShuffleBlockFetcherIterator(
     remoteRequests
   }
 
+//  private[this] def mergeContinuousShuffleBlockIdsIfNeeded(
+//                                                            blocks: ArrayBuffer[FetchBlockInfo]): ArrayBuffer[FetchBlockInfo] = {
+//
+//    def mergeFetchBlockInfo(toBeMerged: ArrayBuffer[FetchBlockInfo]): FetchBlockInfo = {
+//      val startBlockId = toBeMerged.head.blockId.asInstanceOf[ShuffleBlockId]
+//      FetchBlockInfo(
+//        ShuffleBlockBatchId(
+//          startBlockId.shuffleId,
+//          startBlockId.mapId,
+//          startBlockId.reduceId,
+//          toBeMerged.last.blockId.asInstanceOf[ShuffleBlockId].reduceId + 1),
+//        toBeMerged.map(_.size).sum,
+//        toBeMerged.head.mapIndex)
+//    }
+//
+//    val result = if (doBatchFetch) {
+//      var curBlocks = new ArrayBuffer[FetchBlockInfo]
+//      val mergedBlockInfo = new ArrayBuffer[FetchBlockInfo]
+//      val iter = blocks.iterator
+//
+//      while (iter.hasNext) {
+//        val info = iter.next()
+//        val curBlockId = info.blockId.asInstanceOf[ShuffleBlockId]
+//        if (curBlocks.isEmpty) {
+//          curBlocks += info
+//        } else {
+//          if (curBlockId.mapId != curBlocks.head.blockId.asInstanceOf[ShuffleBlockId].mapId) {
+//            mergedBlockInfo += mergeFetchBlockInfo(curBlocks)
+//            curBlocks.clear()
+//          }
+//          curBlocks += info
+//        }
+//      }
+//      if (curBlocks.nonEmpty) {
+//        mergedBlockInfo += mergeFetchBlockInfo(curBlocks)
+//      }
+//      mergedBlockInfo
+//    } else {
+//      blocks
+//    }
+//    // update metrics
+//    numBlocksToFetch += result.size
+//    result
+//  }
   /**
    * Fetch the local blocks while we are fetching remote blocks. This is ok because
    * `ManagedBuffer`'s memory is allocated lazily when we create the input stream, so all we
