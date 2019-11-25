@@ -20,9 +20,10 @@ package org.apache.spark.shuffle.sort
 import java.util.concurrent.ConcurrentHashMap
 
 import org.apache.spark._
-import org.apache.spark.internal.{config, Logging}
+import org.apache.spark.internal.{Logging, config}
 import org.apache.spark.shuffle._
 import org.apache.spark.shuffle.api.{ShuffleDataIO, ShuffleExecutorComponents}
+//import org.apache.spark.shuffle.sort.SortShuffleManager.canUseBatchFetch
 import org.apache.spark.util.Utils
 import org.apache.spark.util.collection.OpenHashSet
 
@@ -95,8 +96,8 @@ private[spark] class SortShuffleManager(conf: SparkConf) extends ShuffleManager 
       shuffleId: Int,
       dependency: ShuffleDependency[K, V, C]): ShuffleHandle = {
 
-    if(SortShuffleWriter.shouldNWayMerge(conf, dependency)) {
-      //If we want to decrease the number of partitions read by shuffle reader, we do a N-Way merge
+    if (SortShuffleWriter.shouldNWayMerge(conf, dependency)) {
+      // If we want to decrease the number of partitions read by shuffle reader, we do a N-Way merge
       new NWayMergeHandle[K, V](
         shuffleId, dependency.asInstanceOf[ShuffleDependency[K, V, V]])
     } else if (SortShuffleWriter.shouldBypassMergeSort(conf, dependency)) {
@@ -130,7 +131,18 @@ private[spark] class SortShuffleManager(conf: SparkConf) extends ShuffleManager 
     new BlockStoreShuffleReader(
       handle.asInstanceOf[BaseShuffleHandle[K, _, C]],
       startPartition, endPartition, context, metrics)
+//    /** == Self define starts == */
+//
+//
+//    val mergedBlockByAddress = SparkEnv.get.mapOutputTracker.getMergedMapSizesByExecutorId(
+//      handle.shuffleId, startPartition, endPartition)
+//
+//    new BlockStoreShuffleReader(
+//      handle.asInstanceOf[BaseShuffleHandle[K, _, C]], mergedBlockByAddress, context, metrics,
+//      shouldBatchFetch = canUseBatchFetch(startPartition, endPartition, context))
+//    /** == Self define ends == */
   }
+
 
   /** Get a writer for a given partition. Called on executors by map tasks. */
   override def getWriter[K, V](
