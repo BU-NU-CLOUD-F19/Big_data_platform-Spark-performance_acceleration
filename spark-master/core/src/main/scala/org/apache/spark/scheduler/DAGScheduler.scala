@@ -1536,7 +1536,9 @@ private[spark] class DAGScheduler(
             }
           case `mt` : MergeTask =>
             val shuffleStage = stage.asInstanceOf[ShuffleMapStage]
-
+            val status = event.result.asInstanceOf[MapStatus]
+            mapOutputTracker.registerMapOutput(
+              shuffleStage.shuffleDep.shuffleId, mt.partitionId, status)
             logInfo("Try try//////////////////////////////////////");
         }
 

@@ -3,13 +3,13 @@ package org.apache.spark.scheduler;
 import org.apache.spark.SparkEnv;
 import org.apache.spark.shuffle.IndexShuffleBlockResolver;
 import org.apache.spark.storage.BlockManager;
+import sun.security.util.Length;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The type Merge reader.
@@ -120,4 +120,19 @@ public class MergeReader {
         dataFileInputStream.close();
         indexFileChannel.close();
     }
+
+    public List<Long> getLengths() throws IOException {
+        indexFileInputStream = new FileInputStream(indexFile);
+        DataInputStream in = new DataInputStream(indexFileInputStream);
+        List<Long> lengths = new ArrayList<>();
+        Long offset = in.readLong();
+        while (in.available()>0){
+            Long val = in.readLong();
+            lengths.add(val-offset);
+        }
+        in.close();
+        indexFileInputStream.close();
+        return lengths;
+    }
+
 }
