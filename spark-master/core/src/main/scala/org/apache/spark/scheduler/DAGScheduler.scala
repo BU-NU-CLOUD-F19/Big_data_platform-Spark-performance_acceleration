@@ -405,7 +405,6 @@ private[spark] class DAGScheduler(
       else {
         logInfo("Registering RDD " + rdd.id + " (" + rdd.getCreationSite + ")")
         mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
-        mapOutputTracker.registerShuffle(shuffleDep.shuffleId, rdd.partitions.length)
       }
     }
     stage

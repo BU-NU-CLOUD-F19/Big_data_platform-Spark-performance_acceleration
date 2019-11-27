@@ -35,7 +35,6 @@ private[spark] class MergeTask(
 
   override def runTask(context: TaskContext): MapStatus ={
     logInfo("Starting with the merge task!")
-   // MergerReader(Seq[] block )
     val threadMXBean = ManagementFactory.getThreadMXBean
     val deserializeStartTimeNs = System.nanoTime()
     val deserializeStartCpuTime = if (threadMXBean.isCurrentThreadCpuTimeSupported) {
