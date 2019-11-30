@@ -49,6 +49,17 @@ import org.apache.spark.util._
  */
 private class ShuffleStatus(numPartitions: Int) {
 
+  def updateMapOutputIndex(mapIndex: Int, status: MapStatus): Unit = withWriteLock {
+    val n: Int = SparkEnv.get.nValue;
+    for (x <- 0 to n - 1) {
+      if (mapStatuses(mapIndex - x) == null) {
+        mapStatuses(mapIndex) == null
+        _numAvailableOutputs -= 1
+      }
+      mapStatuses(mapIndex - n - 1) = status
+      _numAvailableOutputs += 1
+    }
+  }
   private val (readLock, writeLock) = {
     val lock = new ReentrantReadWriteLock()
     (lock.readLock(), lock.writeLock())
@@ -467,6 +478,10 @@ private[spark] class MapOutputTrackerMaster(
   def registerMapOutput(shuffleId: Int, mapIndex: Int, status: MapStatus): Unit = {
     shuffleStatuses(shuffleId).addMapOutput(mapIndex, status)
   }
+  def updateMapOutput(shuffleId: Int, mapIndex: Int, status: MapStatus): Unit = {
+    shuffleStatuses(shuffleId).updateMapOutputIndex(mapIndex, status)
+  }
+
 
   /** Unregister map output information of the given shuffle, mapper and block manager */
   def unregisterMapOutput(shuffleId: Int, mapIndex: Int, bmAddress: BlockManagerId): Unit = {

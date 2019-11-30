@@ -1214,21 +1214,27 @@ private[spark] class DAGScheduler(
 
     val tasks: Seq[Task[_]] = try {
       val serializedTaskMetrics = closureSerializer.serialize(stage.latestInfo.taskMetrics).array()
+      var count : Int = 0;
+      val n = SparkEnv.get.nValue;
       stage match {
         case stage: ShuffleMapStage =>
           var seq = new ListBuffer[Task[_]]()
           stage.pendingPartitions.clear()
           for(id <- partitionsToCompute){
+            count = count + 1;
             val locs = taskIdToLocations(id)
             val part = partitions(id)
             stage.pendingPartitions += id
             seq += new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber,
               taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
               Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
-
-            seq += new MergeTask(stage.id, id, stage.latestInfo.attemptNumber,
-              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
-              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
+            if(n != -1 && count == n)
+              {
+                count = 0;
+                seq += new MergeTask(stage.id, id, stage.latestInfo.attemptNumber,
+                  taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
+                  Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
+              }
           }
           seq;
 //          partitionsToCompute.map { id =>
@@ -1536,7 +1542,7 @@ private[spark] class DAGScheduler(
           case `mt` : MergeTask =>
             val shuffleStage = stage.asInstanceOf[ShuffleMapStage]
             val status = event.result.asInstanceOf[MapStatus]
-            mapOutputTracker.registerMapOutput(
+            mapOutputTracker.updateMapOutput(
               shuffleStage.shuffleDep.shuffleId, mt.partitionId, status)
             logInfo("Try try//////////////////////////////////////");
         }

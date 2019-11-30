@@ -65,7 +65,7 @@ private[spark] class MergeTask(
     var i = 0
     for(x <- lengths){
       l(i) = x;
-      i = i+1;
+      i += 1;
     }
 
     logInfo("......................Files..............." + dep.shuffleId + "     ----   " + context.taskAttemptId())

@@ -68,6 +68,7 @@ class SparkEnv (
     val metricsSystem: MetricsSystem,
     val memoryManager: MemoryManager,
     val outputCommitCoordinator: OutputCommitCoordinator,
+    val nValue: Integer,
     val conf: SparkConf) extends Logging {
 
   @volatile private[spark] var isStopped = false
@@ -408,6 +409,7 @@ object SparkEnv extends Logging {
       metricsSystem,
       memoryManager,
       outputCommitCoordinator,
+      2,
       conf)
 
     // Add a reference to tmp dir created by driver, we will delete this tmp dir when stop() is
