@@ -28,7 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
-
 import org.apache.spark.broadcast.{Broadcast, BroadcastManager}
 import org.apache.spark.internal.Logging
 import org.apache.spark.internal.config._
@@ -49,17 +48,8 @@ import org.apache.spark.util._
  */
 private class ShuffleStatus(numPartitions: Int) {
 
-  def updateMapOutputIndex(mapIndex: Int, status: MapStatus): Unit = withWriteLock {
-    val n: Int = SparkEnv.get.nValue;
-    for (x <- 0 to n - 1) {
-      if (mapStatuses(mapIndex - x) == null) {
-        mapStatuses(mapIndex) == null
-        _numAvailableOutputs -= 1
-      }
-      mapStatuses(mapIndex - n - 1) = status
-      _numAvailableOutputs += 1
-    }
-  }
+
+
   private val (readLock, writeLock) = {
     val lock = new ReentrantReadWriteLock()
     (lock.readLock(), lock.writeLock())
@@ -143,6 +133,15 @@ private class ShuffleStatus(numPartitions: Int) {
     }
   }
 
+  def updateMapOutputIndex(mapIndex: Int, status: MapStatus): Unit = withWriteLock {
+    val n: Int = SparkEnv.get.nValue;
+    for (x <- 0 to n - 1) {
+      _numAvailableOutputs -= 1
+      mapStatuses(mapIndex-x) = null
+    }
+    mapStatuses(mapIndex - (n - 1)) = status
+    _numAvailableOutputs += 1
+  }
   /**
    * Removes all shuffle outputs associated with this host. Note that this will also remove
    * outputs which are served by an external shuffle server (if one exists).
@@ -918,11 +917,12 @@ private[spark] object MapOutputTracker extends Logging {
     assert (statuses != null)
     val splitsByAddress = new HashMap[BlockManagerId, ListBuffer[(BlockId, Long, Int)]]
     for ((status, mapIndex) <- statuses.iterator.zipWithIndex) {
-      if (status == null) {
+      if (status == null && SparkEnv.get.nValue == -1) {
+
         val errorMessage = s"Missing an output location for shuffle $shuffleId"
         logError(errorMessage)
         throw new MetadataFetchFailedException(shuffleId, startPartition, errorMessage)
-      } else {
+      } else if(status != null) {
         for (part <- startPartition until endPartition) {
           val size = status.getSizeForBlock(part)
           if (size != 0) {
