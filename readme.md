@@ -11,7 +11,6 @@ Optimize the partitioning and shuffle algorithms in Spark, to perform more effic
 * Improve the efficiency of the Spark shuffle phase, better than vanilla spark.
 * Decrease the number of I/O operations for the reduce phase.
 * Implement the N-way merge in the shuffle phase for improving efficiency.
-* Experiment over different single and multi-stage jobs.
 * Analyze, using different metrics, the performance improvement over vanilla spark.
 
 ## 2. Users/Personas Of The Project
@@ -21,9 +20,7 @@ People developing Spark applications.
 ### Scope:
 * Provide a design architecture of Riffle proposed in the riffle paper.
 * Analyze and understand the existing code of spark, especially that of the shuffle phase.
-* Setup both local and cloud environments to run spark jobs.
 * Provide a detailed analysis based on metrics (speed-up, difference in number of disk i/o operations) to compare the performances of the job run before and after riffle implementation.
-
 
 
 ## 4. Solution Concept
