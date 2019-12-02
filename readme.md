@@ -96,5 +96,6 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQP9S0yfT6hds_E7
 **25th November - 8th December:**
 
 Make a final presentation, Focus on stretch goals
+Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQb35_c1nmmsdk2X
 
 ** **
