@@ -30,13 +30,13 @@ People developing Spark applications.
 **Aggregate:** This starts aggregation once N map outputs are generated.
 
 ### Current Implementation: ###
-The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing.
+The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing. The processing can often scale well by splitting jobs into smaller tasks for better parallelism.
 
 ### Observation: ###
-A lot of time is wasted in waiting for the map jobs to finish. Since reduce requires all the map outputs, the current implementation has that many i/o operations to do. 
+ All-to-all data transfer, Shuffle Operations become the scaling bottleneck when running many small tasks in multi-stage data analytics jobs. The key observation is that this bottleneck is due to the superlinear increase in disk I/O operations as data volume increases. This is due to the fact that the number of shuffle I/O requests between map and reduce stages grows quadratically as the number of tasks grows, and the average size per request actually shrinks linearly.
 
 ### Improvements proposed: ###
-As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by starting to merge map outputs the moment “N” outputs are generated, This way, the time which was previously being wasted is utilized efficiently and therefore does not contribute to additional time in merging. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
+As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by merging small intermediate  shuffle map outputs files into larger blocks. We will merge the map outputs as soon as the “N” outputs are generated. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
 
  Here are some reference we are using at the moment to work on the solution:
  
