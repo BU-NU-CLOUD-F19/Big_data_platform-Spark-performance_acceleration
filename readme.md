@@ -51,12 +51,6 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 * Prove a decrease in the number of I/O operations by the reduce phase.
 * Prove speed-up in the total execution time of the spark job before and after implementation of Riffle.
 
-**Stretch Goals:**
-
-* Analyze the difference between different disks/file systems on AWS.
-* Find the relationship between N and file attributes(number, length, type of spark job).
-* Finding better storage techniques that improve in-memory storage capacity.
-* Implementing merge policy to choose between N-Way merge and fixed-size block merge.
 
 ## 6. Release Planning
 ### Tasks: ###
