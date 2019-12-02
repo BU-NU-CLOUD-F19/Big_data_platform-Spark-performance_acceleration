@@ -11,7 +11,7 @@ import org.apache.spark.util.Utils
 
 import scala.collection.mutable
 
-private[spark] class MergeWriterScala(
+private[spark] class MergeWriterScala (
        shuffleId: Int,
        mapId: Long) {
 
@@ -58,17 +58,17 @@ private[spark] class MergeWriterScala(
   }
 
 
-  def write(readers: Array[MergeReader], idx: Array[Long]): Unit ={
-    val ifDone = readers.zipWithIndex.map(ele => ele._2).toSet
+  def merge(readers: Array[MergeReader], idx: Array[Long]): Unit ={
+    var ifDone = readers.zipWithIndex.map(ele => ele._2).toSet
     while(ifDone.nonEmpty){
       var done : Set[Int] = Set()
-      for (idx: Int <- ifDone){
-        this.writeDataFile(readers(idx).readDatafile())
-        if(readers(idx).isReadComplete) {
-          done += idx
+      for (ifDoneidx: Int <- ifDone){
+        this.writeDataFile(readers(ifDoneidx).readDatafile())
+        if(readers(ifDoneidx).isReadComplete) {
+          done += ifDoneidx
         }
       }
-      ifDone -- done
+      ifDone = ifDone.diff(done)
     }
     val indexTmp = Utils.tempFileWith(indexFile)
     synchronized {
