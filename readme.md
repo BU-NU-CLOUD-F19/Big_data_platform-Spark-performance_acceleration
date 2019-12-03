@@ -98,7 +98,7 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQP9S0yfT6hds_E7
 Make a final presentation, Focus on stretch goals
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQb35_c1nmmsdk2X
 
-## Set-uo:
+## Set-up:
 Instructions to set up are as follows:
 1. Download IntelliJ (https://www.jetbrains.com/idea/download/#section=mac)
 2. Install the Scala Plug-in (https://www.jetbrains.com/help/idea/discover-intellij-idea-for-scala.html)
