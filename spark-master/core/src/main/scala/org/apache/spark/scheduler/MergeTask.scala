@@ -64,6 +64,7 @@ private[spark] class MergeTask(
     mergeWriter.closeFileOutputStream()
 
     logInfo("......................Files..............." + dep.shuffleId + "     ----   " + context.taskAttemptId())
+
     MapStatus.apply(SparkEnv.get.blockManager.shuffleServerId, lengths, context.taskAttemptId())
   }
   override def preferredLocations: Seq[TaskLocation] = preferredLocs

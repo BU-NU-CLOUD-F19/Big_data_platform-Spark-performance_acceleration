@@ -91,16 +91,29 @@ private[spark] class MergeWriterScala (
 
     val indexFile = blockManager.diskBlockManager.getFile(ShuffleIndexBlockId(shuffleId, mapId, NOOP_REDUCE_ID))
     val indexTmp = Utils.tempFileWith(indexFile)
+
     val out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexTmp)))
-//        Utils.tryWithSafeFinally {
-          // We take in lengths of each block, need to convert it to offsets.
-          var offset = 0L
-          out.writeLong(offset)
-          for (length <- lengths) {
-            offset += length
-            out.writeLong(offset)
-//     }
+      // We take in lengths of each block, need to convert it to offsets.
+      var offset = 0L
+      out.writeLong(offset)
+      for (length <- lengths) {
+        offset += length
+        out.writeLong(offset)
     }
+    {
+      out.close()
+    }
+
+    if (indexFile.exists()) {
+      indexFile.delete()
+    }
+    if (dataFile.exists()) {
+      dataFile.delete()
+    }
+    if (!indexTmp.renameTo(indexFile)) {
+      throw new IOException("fail to rename file " + indexTmp + " to " + indexFile)
+    }
+
     lengths
 
   }

@@ -1075,11 +1075,16 @@ private[spark] object MapOutputTracker extends Logging {
     var mergedBlocksByAddress = new HashMap[BlockManagerId, (Seq[((BlockId, Long, Int), Seq[(BlockId, Long, Int)])], Seq[(BlockId, Long, Int)])]
     //    val iter = statuses.iterator.zipWithIndex
     for ((status, mapIndex) <- statuses.iterator.zipWithIndex) {
-      if (status == null) {
+
+      if (status == null && SparkEnv.get.nValue == -1) {
         val errorMessage = s"Missing an output location for shuffle $shuffleId"
         logError(errorMessage)
         throw new MetadataFetchFailedException(shuffleId, startPartition, errorMessage)
-      } else {
+      } else if (status != null) {
+//        val errorMessage = s"Missing an output location for shuffle $shuffleId"
+//        logError(errorMessage)
+//        throw new MetadataFetchFailedException(shuffleId, startPartition, errorMessage)
+//      } else {
         for (part <- startPartition until endPartition) {
           val size = status.getSizeForBlock(part)
           if (size != 0) {
