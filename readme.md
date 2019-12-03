@@ -98,4 +98,13 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQP9S0yfT6hds_E7
 Make a final presentation, Focus on stretch goals
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQb35_c1nmmsdk2X
 
+##Set-uo:
+Instructions to set up are as follows:
+1. Download IntelliJ (https://www.jetbrains.com/idea/download/#section=mac)
+2. Install the Scala Plug-in (https://www.jetbrains.com/help/idea/discover-intellij-idea-for-scala.html)
+3. Clone the repository and import project as Maven project, select relevant profiles and let IntelliJ index the files. 
+4. Run "./build/mvn -DskipTests clean package" on the terminal
+5. For debugging - Click on Edit configuration and update VM options and checkmark the include dependencies with "Provided" scope. 
+
+![image alt text](Instructions.png)
 ** **
