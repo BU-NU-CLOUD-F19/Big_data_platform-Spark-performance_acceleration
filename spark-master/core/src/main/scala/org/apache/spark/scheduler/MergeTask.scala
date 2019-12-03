@@ -49,38 +49,22 @@ private[spark] class MergeTask(
       threadMXBean.getCurrentThreadCpuTime - deserializeStartCpuTime
     } else 0L
     val dep  = rddAndDep._2;
-//    val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, 1024*1000);
     val capacity = 1024*9000;
-    val mergeReader: MergeReader = new MergeReader(dep.shuffleId, context.taskAttemptId()-1, capacity);
     val n = SparkEnv.get.nValue
     var seq = new scala.collection.mutable.MutableList[MergeReader]()
 
     var u =0
     for(y <- (1 to n).reverse){
-      seq += new MergeReader(dep.shuffleId, context.taskAttemptId()-y, capacity);
+      seq += new MergeReader(dep.shuffleId, context.taskAttemptId()-y, capacity)
     }
-    val mergeWriter: MergeWriterScala = new MergeWriterScala(dep.shuffleId, context.taskAttemptId());
-    val indexByteBuffer = mergeReader.getIndexFile();
+    val mergeWriter: MergeWriterScala = new MergeWriterScala(dep.shuffleId, context.taskAttemptId())
+    val lengths = mergeWriter.merge(seq.toArray)
 
-    mergeReader.closeChannel();
-    mergeReader.closeFileInputStream();
-    mergeWriter.closeChannel();
+    mergeWriter.closeChannel()
     mergeWriter.closeFileOutputStream()
-    val lengths = mergeReader.getLengths.asScala
-    var l = new Array[Long](lengths.length)
-    var i = 0
-    for(x <- lengths){
-      l(i) = x;
-      i += 1;
-    }
-//    mergeWriter.writeIndexFile(indexByteBuffer);
-//    while(!mergeReader.isReadComplete)
-//    {
-//      mergeWriter.writeDataFile(mergeReader.readDatafile());
-//    }
-    mergeWriter.merge(seq.toArray, l)
+
     logInfo("......................Files..............." + dep.shuffleId + "     ----   " + context.taskAttemptId())
-    MapStatus.apply(SparkEnv.get.blockManager.shuffleServerId, l, context.taskAttemptId())
+    MapStatus.apply(SparkEnv.get.blockManager.shuffleServerId, lengths, context.taskAttemptId())
   }
   override def preferredLocations: Seq[TaskLocation] = preferredLocs
 

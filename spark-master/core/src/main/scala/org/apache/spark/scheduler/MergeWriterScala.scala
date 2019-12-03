@@ -6,9 +6,11 @@ import java.nio.channels.FileChannel
 
 import org.apache.spark.SparkEnv
 import org.apache.spark.shuffle.IndexShuffleBlockResolver
-import org.apache.spark.storage.BlockManager
+import org.apache.spark.shuffle.IndexShuffleBlockResolver.NOOP_REDUCE_ID
+import org.apache.spark.storage.{BlockManager, ShuffleIndexBlockId}
 import org.apache.spark.util.Utils
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 private[spark] class MergeWriterScala (
@@ -58,8 +60,23 @@ private[spark] class MergeWriterScala (
   }
 
 
-  def merge(readers: Array[MergeReader], idx: Array[Long]): Unit ={
+
+  def merge(readers: Array[MergeReader]): Array[Long] ={
     var ifDone = readers.zipWithIndex.map(ele => ele._2).toSet
+    var lengths = Array[Long]()
+    for (r <- readers){
+      val rl: Array[java.lang.Long] = r.getLengths.asScala.toArray
+      var idx = 0
+      for(v  <- rl){
+        if(lengths.isEmpty || lengths.size <= idx){
+          lengths :+= v.asInstanceOf[Long]
+        }else{
+          lengths(idx) += v.asInstanceOf[Long]
+        }
+        idx +=1
+      }
+    }
+
     while(ifDone.nonEmpty){
       var done : Set[Int] = Set()
       for (ifDoneidx: Int <- ifDone){
@@ -70,31 +87,21 @@ private[spark] class MergeWriterScala (
       }
       ifDone = ifDone.diff(done)
     }
-    val indexTmp = Utils.tempFileWith(indexFile)
-    synchronized {
 
-      val out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexTmp)))
-      Utils.tryWithSafeFinally {
-        // We take in lengths of each block, need to convert it to offsets.
-        var offset = 0L
-        out.writeLong(offset)
-        for (length <- idx) {
-          offset += length
+
+    val indexFile = blockManager.diskBlockManager.getFile(ShuffleIndexBlockId(shuffleId, mapId, NOOP_REDUCE_ID))
+    val indexTmp = Utils.tempFileWith(indexFile)
+    val out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexTmp)))
+//        Utils.tryWithSafeFinally {
+          // We take in lengths of each block, need to convert it to offsets.
+          var offset = 0L
           out.writeLong(offset)
-        }
-      } {
-        out.close()
-      }
-      if (indexFile.exists()) {
-        indexFile.delete()
-      }
-      if (dataFile.exists()) {
-        dataFile.delete()
-      }
-      if (!indexTmp.renameTo(indexFile)) {
-        throw new IOException("fail to rename file " + indexTmp + " to " + indexFile)
-      }
+          for (length <- lengths) {
+            offset += length
+            out.writeLong(offset)
+//     }
     }
+    lengths
 
   }
 }
