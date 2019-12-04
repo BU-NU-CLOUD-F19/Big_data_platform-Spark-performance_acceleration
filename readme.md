@@ -110,9 +110,7 @@ No. Mappers(M) = 2​
 
     operations on reduce​
 
-    phase: ​
-
-   (M x R)/N : (2 x 2)/2 = 2​
+    phase: ​(M x R)/N : (2 x 2)/2 = 2​
 
 NOTE: Reads and write for the merge are all sequential, hence they do not add too much to overhead of I/o operations.
 
