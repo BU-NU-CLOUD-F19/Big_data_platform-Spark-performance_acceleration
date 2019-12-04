@@ -26,7 +26,6 @@ People developing Spark applications.
 ## 4. Solution Concept
 
 ![image alt text](sparkArch.png)
-![image alt text](Stages.png)
 
 **Aggregate:** This starts aggregation once N map outputs are generated.
 
@@ -37,9 +36,13 @@ The current implementation of spark has three phases: Map, shuffle and reduce. R
 ![image alt text](VanillaImplementation.png)
 ![image alt text](VanillaCall.png)
 ### Observation: ###
+![image alt text](Stages.png)
  All-to-all data transfer, Shuffle Operations become the scaling bottleneck when running many small tasks in multi-stage data analytics jobs. The key observation is that this bottleneck is due to the superlinear increase in disk I/O operations as data volume increases. This is due to the fact that the number of shuffle I/O requests between map and reduce stages grows quadratically as the number of tasks grows, and the average size per request actually shrinks linearly.
 
 ### Improvements proposed: ###
+![image alt text](NwayMerge.png)
+![image alt text](NwayMergeImplementation.png)
+![image alt text](NwayMergeCall.png)
 As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by merging small intermediate  shuffle map outputs files into larger blocks. We will merge the map outputs as soon as the “N” outputs are generated. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
 
 ![image alt text](Riffile.png)
