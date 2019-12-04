@@ -59,7 +59,6 @@ The only difference here is that we’ve merged N-block (here n=2) to form a big
 
 ![image alt text](NwayMergeImplementation.png)
 
-![image alt text](NwayMergeCalls.png)
 1. DAG Scheduler: As explained above
 2. ShuffleMapStage: As explained before
 3. ShuffleMapTask: As explained before
@@ -69,6 +68,8 @@ The only difference here is that we’ve merged N-block (here n=2) to form a big
 7. Merger: Merges the map outputs
 8. MergeWriter: Writes the merged outputs to the Disk
 9. ShuffleReader: Reads from the disk in the ResultTask. 
+
+![image alt text](NwayMergeCalls.png)
 
 As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by merging small intermediate  shuffle map outputs files into larger blocks. We will merge the map outputs as soon as the “N” outputs are generated. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
 
