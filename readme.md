@@ -124,7 +124,8 @@ No. Mappers(M) = 2​
 
     phase: ​(M x R)/N : (2 x 2)/2 = 2​
 
-This reduces the random i/o operations
+This reduces the the number of random I/O operations by the reduce phase.
+
 NOTE: Reads and write for the merge are all sequential, hence they do not add too much to overhead of I/o operations.
 
 ## 6. Release Planning
