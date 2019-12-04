@@ -26,12 +26,16 @@ People developing Spark applications.
 ## 4. Solution Concept
 
 ![image alt text](sparkArch.png)
+![image alt text](Stages.png)
 
 **Aggregate:** This starts aggregation once N map outputs are generated.
 
 ### Current Implementation: ###
 The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing. The processing can often scale well by splitting jobs into smaller tasks for better parallelism.
 
+![image alt text](VanillaSpark.png)
+![image alt text](VanillaImplementation.png)
+![image alt text](VanillaCalls.png)
 ### Observation: ###
  All-to-all data transfer, Shuffle Operations become the scaling bottleneck when running many small tasks in multi-stage data analytics jobs. The key observation is that this bottleneck is due to the superlinear increase in disk I/O operations as data volume increases. This is due to the fact that the number of shuffle I/O requests between map and reduce stages grows quadratically as the number of tasks grows, and the average size per request actually shrinks linearly.
 
