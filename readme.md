@@ -35,7 +35,7 @@ The current implementation of spark has three phases: Map, shuffle and reduce. R
 
 ![image alt text](VanillaSpark.png)
 ![image alt text](VanillaImplementation.png)
-![image alt text](VanillaCalls.png)
+![image alt text](VanillaCall.png)
 ### Observation: ###
  All-to-all data transfer, Shuffle Operations become the scaling bottleneck when running many small tasks in multi-stage data analytics jobs. The key observation is that this bottleneck is due to the superlinear increase in disk I/O operations as data volume increases. This is due to the fact that the number of shuffle I/O requests between map and reduce stages grows quadratically as the number of tasks grows, and the average size per request actually shrinks linearly.
 
