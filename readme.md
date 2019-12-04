@@ -57,6 +57,7 @@ There are two primary stages in the shuffle implementation:
 Image demonstrates the new N-way merge implementation.
 The only difference here is that we’ve merged N-block (here n=2) to form a bigger partition. Therefore, now, the red reducer has to only make two random reads instead of four, and this is consistent across other reducers. Therefore, there are a total of 8 random reads
 
+**Prposed implentaion for N-Way merge by Riffile Paper**
 ![image alt text](NwayMergeImplementation.png)
 
 1. DAG Scheduler: As explained above
@@ -112,6 +113,7 @@ No. Mappers(M) = 2​
 
     phase: ​(M x R)/N : (2 x 2)/2 = 2​
 
+This reduces the random i/o operations
 NOTE: Reads and write for the merge are all sequential, hence they do not add too much to overhead of I/o operations.
 
 ## 6. Release Planning
