@@ -51,6 +51,9 @@ As per the riffle paper, adding an N-Way merger to the shuffle phase helps impro
  
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
+## Results:
+![image alt text](NwayMergeResult.png)
+![image alt text](VanillaResult.png)
 
 ## 5. Acceptance criteria
 
