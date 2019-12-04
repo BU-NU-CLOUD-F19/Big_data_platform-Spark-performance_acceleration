@@ -60,16 +60,23 @@ public class MergeWriter {
         dataFileChannel.write(dataFileBuffer);
     }
 
-    /**
-     * Write index file.
-     *
-     * @param indexFileBuffer the index file buffer
-     * @throws IOException the io exception
-     */
-    public void writeIndexFile(ByteBuffer indexFileBuffer) throws IOException {
-        indexFileBuffer.flip();
-        indexFileChannel.write(indexFileBuffer);
+//    public void writeIndexFile(ByteBuffer indexFileBuffer) throws IOException {
+//        indexFileBuffer.flip();
+//        indexFileChannel.write(indexFileBuffer);
+//    }
+    public void writeIndexFile(Long[] lengths) throws IOException {
+
+        DataOutputStream out = new DataOutputStream(indexFileOutputStream);
+        //indexFileBuffer.flip();
+                Long offset = 0L;
+                out.writeLong(offset);
+        for (Long length : lengths) {
+            offset += length;
+            out.writeLong(offset);
+        }
+        out.close();
     }
+
 
     /**
      * Close channel.

@@ -3,6 +3,7 @@ package org.apache.spark.scheduler;
 import org.apache.spark.SparkEnv;
 import org.apache.spark.shuffle.IndexShuffleBlockResolver;
 import org.apache.spark.storage.BlockManager;
+import org.apache.spark.util.Utils;
 import sun.security.util.Length;
 
 import java.io.*;
@@ -77,6 +78,7 @@ public class MergeReader {
         if((count <= 0)){
             isReadComplete = true;
         }
+       // Utils.deserialize(byteBuffer.array());
         return byteBuffer;
     }
 
@@ -89,6 +91,7 @@ public class MergeReader {
     public ByteBuffer getIndexFile() throws IOException {
         ByteBuffer indexByteBuffer = ByteBuffer.allocate(1024*2000);
         indexFileChannel.read(indexByteBuffer);
+
         return indexByteBuffer;
     }
 

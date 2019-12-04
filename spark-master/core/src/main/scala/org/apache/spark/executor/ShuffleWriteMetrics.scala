@@ -18,6 +18,7 @@
 package org.apache.spark.executor
 
 import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.internal.Logging
 import org.apache.spark.shuffle.ShuffleWriteMetricsReporter
 import org.apache.spark.util.LongAccumulator
 
@@ -28,7 +29,7 @@ import org.apache.spark.util.LongAccumulator
  * Operations are not thread-safe.
  */
 @DeveloperApi
-class ShuffleWriteMetrics private[spark] () extends ShuffleWriteMetricsReporter with Serializable {
+class ShuffleWriteMetrics private[spark] () extends ShuffleWriteMetricsReporter with Serializable with Logging {
   private[executor] val _bytesWritten = new LongAccumulator
   private[executor] val _recordsWritten = new LongAccumulator
   private[executor] val _writeTime = new LongAccumulator
@@ -56,5 +57,17 @@ class ShuffleWriteMetrics private[spark] () extends ShuffleWriteMetricsReporter 
   }
   private[spark] override def decRecordsWritten(v: Long): Unit = {
     _recordsWritten.setValue(recordsWritten - v)
+  }
+
+  private[spark] override def getRecordsWritten(): Unit ={
+    log.info(_recordsWritten.toString)
+  }
+
+  private[spark] override def getBytesWritten(): Unit ={
+    log.info(_bytesWritten.toString)
+  }
+
+  private[spark] override def getWriteTime(): Unit ={
+    log.info(_writeTime.toString)
   }
 }

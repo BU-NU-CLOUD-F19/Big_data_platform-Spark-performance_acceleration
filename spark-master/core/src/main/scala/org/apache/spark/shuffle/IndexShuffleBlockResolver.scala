@@ -189,13 +189,13 @@ private[spark] class IndexShuffleBlockResolver(
       }
     }
   }
-
+   var numBlocksProcessed = 0
   override def getBlockData(blockId: ShuffleBlockId): ManagedBuffer = {
     // The block is actually going to be a range of a single map output file for this map, so
     // find out the consolidated file, then the offset within that from our index
     val indexFile = getIndexFile(blockId.shuffleId, blockId.mapId)
-    logInfo("Files it reading..............." +blockId.shuffleId +"       --       "+ blockId.mapId)
-
+    numBlocksProcessed += 1;
+    logInfo("Files read by Reducer...............ShuffleId: " +blockId.shuffleId +" MapId: "+ blockId.mapId+" ReduceId:  "+blockId.reduceId)
     // SPARK-22982: if this FileInputStream's position is seeked forward by another piece of code
     // which is incorrectly using our file descriptor then this code will fetch the wrong offsets
     // (which may cause a reducer to be sent a different reducer's data). The explicit position
@@ -221,9 +221,9 @@ private[spark] class IndexShuffleBlockResolver(
         nextOffset - offset)
     } finally {
       in.close()
+      logInfo("############### No of Blocks processed: " + numBlocksProcessed+"  ############")
     }
   }
-
   override def stop(): Unit = {}
 }
 

@@ -51,7 +51,6 @@ object GroupByTest {
     pairs1.count()
 
     println(pairs1.groupByKey(numReducers).count())
-
     spark.stop()
   }
 }

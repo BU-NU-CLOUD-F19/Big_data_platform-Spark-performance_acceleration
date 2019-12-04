@@ -43,10 +43,13 @@ private[spark] trait ShuffleReadMetricsReporter {
  * All methods have additional Spark visibility modifier to allow public, concrete implementations
  * that still have these methods marked as private[spark].
  */
-private[spark] trait ShuffleWriteMetricsReporter {
+  private[spark] trait ShuffleWriteMetricsReporter {
   private[spark] def incBytesWritten(v: Long): Unit
   private[spark] def incRecordsWritten(v: Long): Unit
   private[spark] def incWriteTime(v: Long): Unit
   private[spark] def decBytesWritten(v: Long): Unit
   private[spark] def decRecordsWritten(v: Long): Unit
+  private[spark] def getRecordsWritten(): Unit
+  private[spark] def getBytesWritten(): Unit
+  private[spark] def getWriteTime(): Unit
 }

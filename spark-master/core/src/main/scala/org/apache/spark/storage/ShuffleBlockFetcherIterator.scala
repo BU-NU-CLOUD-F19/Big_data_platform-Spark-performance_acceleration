@@ -91,10 +91,9 @@ final class ShuffleBlockFetcherIterator(
 
   /**
    * The number of blocks processed by the caller. The iterator is exhausted when
-   * [[numBlocksProcessed]] == [[numBlocksToFetch]].
+   * [[numBlocksProcessed]] == [[numBlocksToFetch]]
    */
   private[this] var numBlocksProcessed = 0
-
   private[this] val startTimeNs = System.nanoTime()
 
   /** Local blocks to fetch, excluding zero-sized blocks. */
@@ -283,7 +282,7 @@ final class ShuffleBlockFetcherIterator(
     var localBlockBytes = 0L
     var remoteBlockBytes = 0L
 
-    for ((address, blockInfos) <- blocksByAddress) {
+      for ((address, blockInfos) <- blocksByAddress) {
       if (address.executorId == blockManager.blockManagerId.executorId) {
         blockInfos.find(_._2 <= 0) match {
           case Some((blockId, size, _)) if size < 0 =>
@@ -343,13 +342,16 @@ final class ShuffleBlockFetcherIterator(
   private[this] def fetchLocalBlocks(): Unit = {
     logDebug(s"Start fetching local blocks: ${localBlocks.mkString(", ")}")
     val iter = localBlocks.iterator
+
     while (iter.hasNext) {
+
       val (blockId, mapIndex) = iter.next()
       try {
         val buf = blockManager.getBlockData(blockId)
         shuffleMetrics.incLocalBlocksFetched(1)
         shuffleMetrics.incLocalBytesRead(buf.size)
         buf.retain()
+
         results.put(new SuccessFetchResult(blockId, mapIndex, blockManager.blockManagerId,
           buf.size(), buf, false))
       } catch {
@@ -364,6 +366,7 @@ final class ShuffleBlockFetcherIterator(
             case ex: Exception => logError("Error occurred while fetching local blocks", ex)
           }
           results.put(new FailureFetchResult(blockId, mapIndex, blockManager.blockManagerId, e))
+
           return
       }
     }

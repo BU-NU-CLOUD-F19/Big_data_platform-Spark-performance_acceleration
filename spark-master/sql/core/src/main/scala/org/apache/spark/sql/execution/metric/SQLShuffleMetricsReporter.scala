@@ -132,6 +132,12 @@ class SQLShuffleWriteMetricsReporter(
     metricsReporter.decBytesWritten(v)
     _bytesWritten.set(_bytesWritten.value - v)
   }
+
+  private[spark] override def getRecordsWritten(): Unit = ???
+
+  override private[spark] def getBytesWritten(): Unit = ???
+
+  override private[spark] def getWriteTime(): Unit = ???
 }
 
 object SQLShuffleWriteMetricsReporter {

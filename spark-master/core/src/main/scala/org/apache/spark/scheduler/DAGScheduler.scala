@@ -1221,13 +1221,13 @@ private[spark] class DAGScheduler(
           var seq = new ListBuffer[Task[_]]()
           stage.pendingPartitions.clear()
           for(id <- partitionsToCompute){
-            count = count + 1;
             val locs = taskIdToLocations(id)
             val part = partitions(id)
             stage.pendingPartitions += id
             seq += new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber,
               taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
               Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier());
+            count = count + 1;
             if(n != -1 && count == n)
               {
                 count = 0;
@@ -1245,14 +1245,6 @@ private[spark] class DAGScheduler(
 //              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
 //              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
 //
-//          }
-//          partitionsToCompute.map { id =>
-//            val locs = taskIdToLocations(id)
-//            val part = partitions(id)
-//            stage.pendingPartitions += id
-//            new MergeTask(stage.id, stage.latestInfo.attemptNumber,
-//              taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId),
-//              Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
 //          }
 
         case stage: ResultStage =>
@@ -1278,6 +1270,7 @@ private[spark] class DAGScheduler(
         s"tasks are for partitions ${tasks.take(15).map(_.partitionId)})")
       taskScheduler.submitTasks(new TaskSet(
         tasks.toArray, stage.id, stage.latestInfo.attemptNumber, jobId, properties))
+
     } else {
       // Because we posted SparkListenerStageSubmitted earlier, we should mark
       // the stage as completed here in case there are no tasks to run
@@ -1291,6 +1284,7 @@ private[spark] class DAGScheduler(
               s"partitions: ${stage.numPartitions})")
           markMapStageJobsAsFinished(stage)
         case stage : ResultStage =>
+
           logDebug(s"Stage ${stage} is actually done; (partitions: ${stage.numPartitions})")
       }
       submitWaitingChildStages(stage)
@@ -1480,9 +1474,7 @@ private[spark] class DAGScheduler(
 
                   // taskSucceeded runs some user code that might throw an exception. Make sure
                   // we are resilient against that.
-                  try {
-                    job.listener.taskSucceeded(rt.outputId, event.result)
-                  } catch {
+                  try job.listener.taskSucceeded(rt.outputId, event.result) catch {
                     case e: Throwable if !Utils.isFatalError(e) =>
                       // TODO: Perhaps we want to mark the resultStage as failed?
                       job.listener.jobFailed(new SparkDriverExecutionException(e))
@@ -1504,7 +1496,7 @@ private[spark] class DAGScheduler(
               // The epoch of the task is acceptable (i.e., the task was launched after the most
               // recent failure we're aware of for the executor), so mark the task's output as
               // available.
-
+              logInfo("Files Originally Written---  ShuffleId: " +shuffleStage.shuffleDep.shuffleId +" MapId: "+ status.mapTaskId)
               mapOutputTracker.registerMapOutput(
                 shuffleStage.shuffleDep.shuffleId, smt.partitionId, status)
             }
@@ -1544,7 +1536,6 @@ private[spark] class DAGScheduler(
             val status = event.result.asInstanceOf[MapStatus]
             mapOutputTracker.updateMapOutput(
               shuffleStage.shuffleDep.shuffleId, mt.partitionId, status)
-            logInfo("Try try//////////////////////////////////////");
         }
 
       case FetchFailed(bmAddress, shuffleId, _, mapIndex, _, failureMessage) =>
@@ -1968,6 +1959,7 @@ private[spark] class DAGScheduler(
     if (errorMessage.isEmpty) {
       logInfo("%s (%s) finished in %s s".format(stage, stage.name, serviceTime))
       stage.latestInfo.completionTime = Some(clock.getTimeMillis())
+
 
       // Clear failure count for this stage, now that it's succeeded.
       // We only limit consecutive failures of stage attempts,so that if a stage is
