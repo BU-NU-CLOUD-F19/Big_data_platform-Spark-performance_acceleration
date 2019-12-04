@@ -32,7 +32,7 @@ People developing Spark applications.
 ### Current Implementation: ###
 The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing. The processing can often scale well by splitting jobs into smaller tasks for better parallelism.
 
-**Vanila Spark**
+**Vanilla Spark**
 ![image alt text](VanillaSpark.png)
 Consider there are 4 mappers are producing 4 partitions with 4 blocks in each partition. Different colors represent different blocks of data in different partitions. Each reducer has to read from its color associated-block. So the red colored reducer has to read from red blocks, therefore, overall it has 4 random reads, one for each partitions. Similarly, blue, lemon green, and grayish blue reducers make 4 random reads each. Therefore, there are a total of 16 random reads in the traditional vanilla spark implementation.
 
@@ -45,6 +45,8 @@ Consider there are 4 mappers are producing 4 partitions with 4 blocks in each pa
 5. ResultTask: A task that sends back the output to the driver application.
 6. ShuffleWriter: Write the map outputs to the disk.
 7. ShuffleReader: Reads the shuffled and sorted result. 
+
+**Block reading in Orignal flow**
 ![image alt text](VanillaCall.png)
 
 ### Observation: ###
@@ -60,7 +62,7 @@ There are two primary stages in the shuffle implementation:
 
 ### Improvements proposed: ###
 
-**Prposed implentaion for N-Way merge by Riffile Paper**
+**Proposed implementation for N-Way merge by Riffle Paper**
 ![image alt text](NwayMerge.png)
 Image demonstrates the new N-way merge implementation.
 The only difference here is that we’ve merged N-block (here n=2) to form a bigger partition. Therefore, now, the red reducer has to only make two random reads instead of four, and this is consistent across other reducers. Therefore, there are a total of 8 random reads
@@ -78,6 +80,7 @@ The only difference here is that we’ve merged N-block (here n=2) to form a big
 8. MergeWriter: Writes the merged outputs to the Disk
 9. ShuffleReader: Reads from the disk in the ResultTask. 
 
+**Block reading in updated flow**
 ![image alt text](NwayMergeCalls.png)
 
 As per the riffle paper, adding an N-Way merger to the shuffle phase helps improve efficiency by merging small intermediate  shuffle map outputs files into larger blocks. We will merge the map outputs as soon as the “N” outputs are generated. Hence, number of I/O operations gets reduced to M/N from M, where M denotes the number of Map outputs and N denotes the factor “N” in the N-Way merge
