@@ -107,4 +107,10 @@ Instructions to set up are as follows:
 5. For debugging - Click on Edit configuration and update VM options and checkmark the include dependencies with "Provided" scope. 
 
 ![image alt text](Instructions.png)
+
+## Contributors:
+1. Grishma Atul Thakkar
+2. Virat Goradia
+3. Nipun Midha
+4. Baoshu Brady Qi
 ** **
