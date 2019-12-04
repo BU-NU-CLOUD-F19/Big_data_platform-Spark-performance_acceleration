@@ -77,16 +77,18 @@ As per the riffle paper, adding an N-Way merger to the shuffle phase helps impro
  
 https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 
-## Results:
-![image alt text](NwayMergeResult.png)
-![image alt text](VanillaResult.png)
-
 ## 5. Acceptance criteria
 
 * Implement Riffle’s N-Way merge algorithm.
 * Prove a decrease in the number of I/O operations by the reduce phase.
-* Prove speed-up in the total execution time of the spark job before and after implementation of Riffle.
 
+## Results:
+Vanilla Spark Implementation Result:
+
+![image alt text](VanillaResult.png)
+
+N-way Merge Implementation Result:
+![image alt text](NwayMergeResult.png)
 
 ## 6. Release Planning
 ### Tasks: ###
@@ -96,7 +98,7 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 * Finding an appropriate dataset/project to perform analysis.
 * Analyze and understand the existing spark code and rest API, especially for the spark shuffle phase.
 * Run Spark applications and profile Spark performance before and after riffle implementation.
-* Providing detailed analysis based on metrics(speed-up, the difference in number of I/O operations) on different spark jobs(single and multi-stage).
+* Providing detailed analysis based on metrics(the difference in number of I/O operations).
 
 ### Timeline: ###
 
@@ -108,7 +110,7 @@ Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHXYOnMyJf1dvMkP
 
 **30th September - 13th October:**
 
-Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge,find the appropriate data set, start the implementation of N-Way merge algorithm.
+Understand existing spark code for the shuffle phase, complete the design architecture of Riffle, discuss ideas on how to start the implementation of N-Way merge, and find the appropriate data set.
 
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHidtUcEnSf759UO 
 
@@ -116,22 +118,21 @@ Paper Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHotq5uGxGZmb2EV
 
 **14th October - 27th October:**
 
-Work on the backlog, continue implementation of N-Way merge and test the correctness of algorithm implemented so far.
+Work on the backlog, start strategizing and designing for implementation of N-Way merge. 
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utHziF9GZFdaXCy_h
 
 **28th October - 10th November:**
 
-Brainstorm on improvements/ fine-tuning of algorithm/strategies and possibly implement them.
+Start the implementation using a new approach, but limit it to 1:1 mapping and merge in the next sprint. 
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQGpueCx88jb73_i
 
 **11th November - 24th November:**
-
-Continue working on possible improvements
+Realizing the flaw in our previous implementation, we came up with a new approach and started implementing this for 1:1 mapping. 
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQP9S0yfT6hds_E7
 
 **25th November - 8th December:**
 
-Make a final presentation, Focus on stretch goals
+Make a final presentation, work on N:1 mapping, and also implement the merge algorithm.
 Presentation Link: https://1drv.ms/p/s!Aj2G3numQP0utQb35_c1nmmsdk2X
 
 ## Set-up:
