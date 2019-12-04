@@ -31,9 +31,11 @@ People developing Spark applications.
 
 ### Current Implementation: ###
 The current implementation of spark has three phases: Map, shuffle and reduce. Reduce phase requires all the map outputs to start its computation. Once all map outputs are shuffled, the reduce phase fetches this as input to start its processing. The processing can often scale well by splitting jobs into smaller tasks for better parallelism.
+
 **Vanila Spark**
 ![image alt text](VanillaSpark.png)
 Consider there are 4 mappers are producing 4 partitions with 4 blocks in each partition. Different colors represent different blocks of data in different partitions. Each reducer has to read from its color associated-block. So the red colored reducer has to read from red blocks, therefore, overall it has 4 random reads, one for each partitions. Similarly, blue, lemon green, and grayish blue reducers make 4 random reads each. Therefore, there are a total of 16 random reads in the traditional vanilla spark implementation.
+
 **Orignal Flow Diagram**
 ![image alt text](VanillaImplementation.png)
 1. DAG Scheduler: The high-level scheduling layer that implements stage-oriented scheduling. It computes a DAG of stages for each job, keeps track of which RDDs and stage outputs are materialized, and finds a minimal schedule to run the job. 
@@ -44,6 +46,7 @@ Consider there are 4 mappers are producing 4 partitions with 4 blocks in each pa
 6. ShuffleWriter: Write the map outputs to the disk.
 7. ShuffleReader: Reads the shuffled and sorted result. 
 ![image alt text](VanillaCall.png)
+
 ### Observation: ###
 
 **Different stages of Spark**
@@ -61,6 +64,7 @@ There are two primary stages in the shuffle implementation:
 ![image alt text](NwayMerge.png)
 Image demonstrates the new N-way merge implementation.
 The only difference here is that we’ve merged N-block (here n=2) to form a bigger partition. Therefore, now, the red reducer has to only make two random reads instead of four, and this is consistent across other reducers. Therefore, there are a total of 8 random reads
+
 **Updated Flow Diagram**
 ![image alt text](NwayMergeImplementation.png)
 
