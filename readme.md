@@ -83,12 +83,38 @@ https://haoyuzhang.org/publications/riffle-eurosys18.pdf
 * Prove a decrease in the number of I/O operations by the reduce phase.
 
 ## Results:
-Vanilla Spark Implementation Result:
+**Vanilla Spark Implementation Result:**
 
 ![image alt text](VanillaResult.png)
 
-N-way Merge Implementation Result:
+No. Mappers(M) = 2​
+
+    No. Reducers(R) = 2​
+
+    No. Of I/O operations on ​
+
+    reduce phase: ​
+
+    (M x R) : 2 x 2 = 4
+
+**N-way Merge Implementation Result:**
 ![image alt text](NwayMergeResult.png)
+
+No. Mappers(M) = 2​
+
+    No. Reducers(R) = 2​
+
+    N factor: 2​
+
+    No. Of I/O​
+
+    operations on reduce​
+
+    phase: ​
+
+   (M x R)/N : (2 x 2)/2 = 2​
+
+NOTE: Reads and write for the merge are all sequential, hence they do not add too much to overhead of I/o operations.
 
 ## 6. Release Planning
 ### Tasks: ###
